@@ -1,0 +1,266 @@
+<div class="control-box wpcf7-pdf-forms-admin" style="height: auto;">
+	<div class="wpcf7-pdf-forms-spinner-overlay-box"></div>
+	<input type="hidden" name="post_id" value="{post-id}" size="50" />
+	
+	{messages}
+	
+	<p class="instructions">{instructions}</p>
+	
+	<a name="wpcf7-pdf-form-messages"></a>
+	<div class="messages"></div>
+	
+	<table class="form-table pdf-attachments">
+		<tbody>
+			<tr class="pdf-buttons">
+				<td class="filename-column"></td>
+				<td class="pdf-buttons">
+					<input type="button" name="attach" class="button button-primary attach-btn" value="{attach-pdf}"/>
+				</td>
+			</tr>
+			<tr class="pdf-attachment-row-template">
+				<td class="filename-column">
+					<span class="pdf-filename"></span>
+					<div class="pdf-options pdf-options-hidden" style="display:none">
+						<div><input data-option="skip_empty" type="checkbox"/> {skip-when-empty}</div>
+						<div><input data-option="attach_to_mail_1" type="checkbox"/> {attach-to-mail-1}</div>
+						<div><input data-option="attach_to_mail_2" type="checkbox"/> {attach-to-mail-2}</div>
+						<div><input data-option="flatten" type="checkbox"/> {flatten}</div>
+						<div><input data-option="download_link" type="checkbox"/> {download-link}</div>
+						<div>{filename}<br/><input data-option="filename" type="text"/>.pdf</div>
+						<div>{save-directory}<br/><input data-option="save_directory" type="text"/></div>
+					</div>
+				</td>
+				<td class="pdf-buttons">
+					<a class="button button-secondary pdf-options-button" href="#">{options}</a>
+					<a class="button button-secondary delete-button" href="#">{delete}</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<hr/>
+	
+	<div class="field-mapping-tool">
+		<div>
+			<span class="dashicons dashicons-randomize"></span>
+			<strong>{field-mapping}</strong>
+			<a class="help-button" href="#">{hide-help}</a>
+			<div class="helpbox">
+				<span class="dashicons dashicons-editor-help"></span>
+				{field-mapping-help}
+			</div>
+		</div>
+		
+		<table class="form-table pdf-fields-mapper mapping-table">
+			<tbody>
+				<tr>
+					<th class="cf7-field">{cf7-field-or-mail-tags}</th>
+					<th></th>
+					<th class="pdf-field">{pdf-field}</th>
+				</tr>
+				<tr class="marked-row-background">
+					<td class="cf7-field select-dropdown"><select class="cf7-field-list"></select></td>
+					<td class="mapping-arrow"><span class="dashicons dashicons-arrow-right-alt"></span></td>
+					<td class="pdf-field select-dropdown"><select class="pdf-field-list"></select></td>
+					<td class="buttons">
+						<a class="button button-primary add-mapping-button" href="#">{add-mapping}</a>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="3" class="tag-hint-row">{new-tag} <span class="tag-hint"></span></td>
+					<td class="buttons"><input type="button" class="button button-primary insert-tag-hint-btn" value="{insert-tag}" /></td>
+				</tr>
+				<tr class="marked-row-background">
+					<td colspan="3" class="generate-and-insert-all-tags-message">{generate-and-insert-all-tags-message}</td>
+					<td class="buttons"><input type="button" class="button button-primary insert-and-map-all-tags-btn" value="{insert-and-map-all-tags}" /></td>
+				</tr>
+				<tr class="pdf-mapping-row-template">
+					<td class="cf7-field"><span class="cf7-field-name"></span> <a class="convert-to-mailtags-button" href="#"><span class="dashicons dashicons-edit"></span></a></td>
+					<td class="mapping-arrow"><span class="dashicons dashicons-arrow-right-alt"></span></td>
+					<td class="pdf-field"><span class="pdf-field-name"></span></td>
+					<td class="buttons">
+						<a class="button button-small delete-mapping-button" href="#">{delete}</a>
+						<a class="button button-small map-value-button" href="#">{map-value}</a>
+					</td>
+				</tr>
+				<tr class="pdf-mapping-row-mailtag-template">
+					<td class="mail-tags"><textarea name="text" spellcheck="false" class="mail-tags" data-pdf-field=""></textarea></td>
+					<td class="mapping-arrow"><span class="dashicons dashicons-arrow-right-alt"></span></td>
+					<td class="pdf-field"><span class="pdf-field-name"></span></td>
+					<td class="buttons">
+						<a class="button button-small delete-mapping-button" href="#">{delete}</a>
+						<a class="button button-small map-value-button" href="#">{map-value}</a>
+					</td>
+				</tr>
+				<tr class="pdf-mapping-row-valuemapping-template">
+					<td class="cf7-field"><input type="text" class="cf7-value" /></td>
+					<td class="mapping-arrow"><span class="dashicons dashicons-arrow-right"></span></td>
+					<td class="pdf-field"><input type="text" class="pdf-value" /></td>
+					<td class="buttons">
+						<a class="button button-small delete-valuemapping-button" href="#">{delete}</a>
+					</td>
+				</tr>
+				<tr class="delete-all-row">
+					<td colspan="3"></td>
+					<td class="buttons">
+						<a class="button button-small delete-all-mappings-button" href="#">{delete-all-mappings}</a>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	<hr/>
+	
+	<div class="image-embedding-tool">
+		
+		<div>
+			<span class="dashicons dashicons-media-document"></span>
+			<strong>{image-embedding}</strong>
+			<a class="help-button" href="#">{hide-help}</a>
+			
+			<div class="helpbox">
+				<span class="dashicons dashicons-editor-help"></span>
+				{image-embedding-help}
+			</div>
+		</div>
+		
+		<table class="form-table image-embeds mapping-table">
+			<tbody>
+				<tr>
+					<th class="cf7-field"><label for="embed-cf7-field">{cf7-field-or-mail-tags}</label></th>
+					<th></th>
+					<th class="pdf-file"><label for="embed-pdf-list">{pdf-file}</label></th>
+					<th><label for="embed-page">{page}</label></th>
+					<th></th>
+				</tr>
+				<tr>
+					<td class="cf7-field select-dropdown"><select class="cf7-field-list" name="embed-cf7-field"></select></td>
+					<td class="mapping-arrow"><span class="dashicons dashicons-arrow-right-alt"></span></td>
+					<td class="pdf-file select-dropdown"><select class="pdf-files-list" name="embed-pdf-list"></select></td>
+					<td class="pdf-page select-dropdown"><select class="page-list" name="embed-page"></select></td>
+					<td class="buttons"><a class="button button-primary add-cf7-field-embed-button" href="#">{add-cf7-field-embed}</a></td>
+				</tr>
+				<tr class="image-embeds-row-template">
+					<td colspan="5">
+						<hr/>
+					</td>
+				</tr>
+				<tr class="image-embeds-row-template">
+					<td class="cf7-field cf7-field-caption"><span class="cf7-field-name"></span> <a class="convert-to-mailtags-button" href="#"><span class="dashicons dashicons-edit"></span></a></td>
+					<td class="mapping-arrow"><span class="dashicons dashicons-arrow-right-alt"></span></td>
+					<td class="pdf-file pdf-file-caption"></td>
+					<td class="page-caption"></td>
+					<td class="buttons"><a class="button button-small delete-cf7-field-embed-button" href="#">{delete-cf7-field-embed}</a></td>
+				</tr>
+				<tr class="image-embeds-row-template page-selector-row">
+					<td colspan="5">
+						<div class="image-region-selection-hint">{image-region-selection-hint}</div>
+						<div class="jcrop-container">
+							<img class="jcrop-page" width="500" height="600" />
+						</div>
+						<div class="page-coordinates">
+							<span>
+								<label for="left">{left}</label>
+								<input type="number" min="0" name="left" class="coordinate" value="10" /> {pts};
+							</span>
+							<span>
+								<label for="top">{top}</label>
+								<input type="number" min="0" name="top" class="coordinate" value="10" /> {pts};
+							</span>
+							<span>
+								<label for="width">{width}</label>
+								<input type="number" min="0" name="width" class="coordinate" value="50" /> {pts};
+							</span>
+							<span>
+								<label for="height">{height}</label>
+								<input type="number" min="0" name="height" class="coordinate" value="50" /> {pts};
+							</span>
+						</div>
+					</td>
+				</tr>
+				<tr class="image-embeds-row-mailtag-template">
+					<td colspan="5">
+						<hr/>
+					</td>
+				</tr>
+				<tr class="image-embeds-row-mailtag-template">
+					<td class="mail-tags"><textarea name="text" spellcheck="false" class="mail-tags"></textarea></td>
+					<td class="mapping-arrow"><span class="dashicons dashicons-arrow-right-alt"></span></td>
+					<td class="pdf-file pdf-file-caption"></td>
+					<td class="page-caption"></td>
+					<td class="buttons"><a class="button button-small delete-cf7-field-embed-button" href="#">{delete-cf7-field-embed}</a></td>
+				</tr>
+				<tr class="image-embeds-row-mailtag-template page-selector-row">
+					<td colspan="5">
+						<div class="image-region-selection-hint">{image-region-selection-hint}</div>
+						<div class="jcrop-container">
+							<img class="jcrop-page" width="500" height="600" />
+						</div>
+						<div class="page-coordinates">
+							<span>
+								<label for="left">{left}</label>
+								<input type="number" min="0" name="left" class="coordinate" value="10" /> {pts};
+							</span>
+							<span>
+								<label for="top">{top}</label>
+								<input type="number" min="0" name="top" class="coordinate" value="10" /> {pts};
+							</span>
+							<span>
+								<label for="width">{width}</label>
+								<input type="number" min="0" name="width" class="coordinate" value="50" /> {pts};
+							</span>
+							<span>
+								<label for="height">{height}</label>
+								<input type="number" min="0" name="height" class="coordinate" value="50" /> {pts};
+							</span>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		
+	</div>
+	
+	<hr/>
+	
+	<div class="tag-generator-tool">
+		
+		<a name="wpcf7-pdf-form-tags-textarea"></a>
+		
+		<div>
+			<span class="dashicons dashicons-welcome-write-blog"></span>
+			<strong>{tag-generator}</strong>
+			<a class="tag-generator-toggle-button" href="#">{show-tag-generator}</a>
+			<a class="help-button tag-generator-body-element" href="#">{hide-help}</a>
+			
+			<div class="tag-generator-body-element">
+				<div class="helpbox">
+					<span class="dashicons dashicons-editor-help"></span>
+					{tag-generator-help}
+				</div>
+			</div>
+		</div>
+		
+		<textarea wrap="hard" name="text" class="tag code tags-textarea tag-generator-body-element"></textarea>
+		
+		<div class="submitbox tag-generator-body-element">
+			<select class="pdf-files-list" name="tag-generator-pdf-list"><option value="all">{all-pdfs}</option></select>
+			<a class="button button-primary get-tags-all-button" href="#">{get-tags}</a>
+			<input type="button" class="button button-primary insert-tags-button" value="{insert-tags}" />
+		</div>
+		
+	</div>
+	
+	<hr/>
+	
+	<div class="insert-box">
+		<input type="hidden" name="text" class="tag code" value="" onfocus="this.select()" />
+		<input type="button" class="button insert-tag hidden" value="" />
+	</div>
+	<div class="footer">
+		<a class="button button-primary return-to-form-button" href="#">{return-to-form}</a>
+		<span class="dashicons dashicons-editor-help"></span>
+		{help-message}
+	</div>
+</div>

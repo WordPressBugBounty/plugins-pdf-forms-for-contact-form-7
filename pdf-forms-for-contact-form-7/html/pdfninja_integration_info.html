@@ -1,0 +1,59 @@
+<p>{top-message}</p>
+
+<table class="form-table wpcf7-pdf-form-integration-card">
+	<tbody>
+		<tr>
+			<th scope="row">{key-label}</th>
+			<td class="code"><span id="pdf-ninja-key">{key}</span> <button id="copy-pdf-ninja-key-btn" class="button-secondary">{key-copy-btn-label}</button></td>
+		</tr>
+		<tr>
+			<th scope="row">{api-url-label}</th>
+			<td class="code">{api-url}</td>
+		</tr>
+		<tr>
+			<th scope="row">{api-version-label}</th>
+			<td>
+				<div>
+					<input type="radio" id="api-version-1" name="api-version" value="1" disabled {api-version-1-value} />
+					<label for="api-version-1">{api-version-1-label}</label>
+				</div>
+				<div>
+					<input type="radio" id="api-version-2" name="api-version" value="2" disabled {api-version-2-value} />
+					<label for="api-version-2">{api-version-2-label}</label>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<th scope="row">{security-label}</th>
+			<td>
+				<input type="checkbox" id="nosslverify" name="nosslverify" disabled {no-ssl-verify-value} />
+				<label for="nosslverify">{no-ssl-verify-label}</label>
+			</td>
+		</tr>
+		<tr>
+			<th scope="row"><a target="_blank" href="https://maximum.software/store/pdf-forms-filler-enterprise-extension-2/">{enterprise-extension-support-label}</a></th>
+			<td>{enterprise-extension-support-value}</td>
+		</tr>
+	</tbody>
+</table>
+
+<script type="text/javascript">
+	jQuery(document).ready(function($) {
+		jQuery("#copy-pdf-ninja-key-btn").click(function() {
+			var tmp = jQuery("<input>");
+			jQuery("body").append(tmp);
+			tmp.val(jQuery("#pdf-ninja-key").text()).select();
+			document.execCommand("copy");
+			tmp.remove();
+			var btn = this;
+			setTimeout(function() { jQuery(btn).text("{key-copied-btn-label}"); }, 1);
+			setTimeout(function() { jQuery(btn).text("{key-copy-btn-label}"); }, 1000);
+		});
+	});
+</script>
+
+<p>{security-warning}</p>
+
+<p>
+	<a href="{edit-link}" class="button">{edit-label}</a>
+</p>
