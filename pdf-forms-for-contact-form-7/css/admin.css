@@ -17,10 +17,16 @@
 	max-width: 100%;
 }
 
+.wpcf7-pdf-forms-admin .form-table td
+{
+	padding: 4px;
+}
+
 .wpcf7-pdf-forms-admin .tags-textarea
 {
 	min-height: 180px;
-	width: 100%;
+	width: 100% !important;
+	max-width: none !important;
 	margin-top: 5px;
 }
 
@@ -83,7 +89,17 @@
 
 .wpcf7-pdf-forms-admin .filename-column
 {
-	width: 100%
+	width: 100%;
+}
+
+.wpcf7-pdf-forms-admin .pdf-attachments
+{
+	border-top: 1px dotted #ccc;
+}
+
+.wpcf7-pdf-forms-admin .pdf-attachment-row
+{
+	border-bottom: 1px dotted #ccc;
 }
 
 .wpcf7-pdf-forms-admin .pdf-attachment-row .pdf-filename
@@ -220,16 +236,17 @@
 	display: none;
 }
 
-.wpcf7-pdf-forms-admin .tag-hint-row
-{
-	vertical-align: middle !important;
-	text-align: left !important;
-}
-
 .wpcf7-pdf-forms-admin .tag-hint
 {
-	font-weight: bold;
-	word-break: break-all;
+	background-color: transparent;
+	box-shadow: none;
+}
+
+.wpcf7-pdf-forms-admin-insert-box .tag-hint
+{
+	width: 450px;
+	background-color: transparent;
+	box-shadow: none;
 }
 
 .wpcf7-pdf-forms-admin .marked-row-background
@@ -278,15 +295,14 @@
 	font-style: italic;
 }
 
-.wpcf7-pdf-forms-admin .return-to-form-button
-{
-	float: right;
-	margin-right: 10px;
-}
-
 .wpcf7-pdf-forms-admin .tag-generator-tool .pdf-files-list
 {
 	width: 20%;
+}
+
+.wpcf7-pdf-forms-tag-generator-panel fieldset > *
+{
+	margin-bottom: 20px;
 }
 
 .wpcf7-pdf-forms-admin .insert-box
@@ -317,4 +333,19 @@
 .wpcf7-pdf-forms-admin .image-embeds td.pdf-page
 {
 	width: 10%;
+}
+
+.field-mapping-generator-table
+{
+	height: 50px;
+}
+
+.field-mapping-generator-table th
+{
+	vertical-align: middle;
+}
+
+.field-mapping-generator-bnts
+{
+	text-align: right;
 }

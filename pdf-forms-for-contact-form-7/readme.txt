@@ -1,10 +1,10 @@
 === PDF Forms Filler for CF7 ===
-Version: 2.1.10
-Stable tag: 2.1.10
+Version: 2.2.0
+Stable tag: 2.2.0
 Requires at least: 4.8
-Tested up to: 6.4
+Tested up to: 6.7
 Requires PHP: 5.2
-Tags: pdf, form, filler, contact form, attach, email, download
+Tags: pdf, form, contact form, email, download
 Plugin URI: https://pdfformsfiller.org/
 Author: Maximum.Software
 Author URI: https://maximum.software/
@@ -27,6 +27,8 @@ When your website visitor submits your Contact Form 7 form, the form in the PDF 
 What makes this plugin special is its approach to preparing PDF files. It is not generating PDF documents from scratch. It modifies the original PDF document that was prepared using third party software and supplied to the plugin. This allows users the freedom to design exactly what they need and use their pre-existing documents.
 
 An external web API (https://pdf.ninja) is used for filling PDF forms (free usage has limitations). The "Enterprise Extension" plugin is available for purchase that enables the processing all PDF operations locally on your web server and disables the use of the external web API.
+
+Please see [Pdf.Ninja Terms of Use](https://pdf.ninja/#terms) and [Pdf.Ninja Privacy Policy](https://pdf.ninja/#privacy).
 
 Please see the [tutorial video](https://youtu.be/jy84xqnj0Zk) and the [documentation](https://pdfformsfiller.org/docs/cf7/) for detailed information.
 
@@ -63,6 +65,15 @@ Special thanks to the following sponsors of this plugin:
 4. Start using the 'PDF Form' button in the CF7 form editor.
 
 == Changelog ==
+
+= 2.2.0 =
+
+* Release date: November 11, 2024
+
+* Added support for CF7 v6.0
+* Moved attachment tool, the field mapper tool and the image embedding tool from tag generator to a separate settings panel
+* Added automatically download filled PDF feature
+* Other fixes and improvements
 
 = 2.1.10 =
 
@@ -539,7 +550,7 @@ Try using the [Enable Media Replace plugin](https://wordpress.org/plugins/enable
 
 = My checkboxes and/or radio buttons are not getting filled, what is wrong? =
 
-Make sure your PDF checkbox/radio field's exported value matches the value of the CF7 form's checkbox tag. Usually, it is "On" or "Yes". If you need to display a different value in the CF7 form, you will need to create a value mapping or use [pipes](https://contactform7.com/selectable-recipient-with-pipes/).
+Make sure your PDF checkbox/radio field's exported value matches the value of the CF7 form's checkbox tag. Usually, it is "On" or "Yes". If you need to display a different value in the CF7 form, you will need to create a [value mapping](https://pdfformsfiller.org/docs/cf7/tools/mapping-field-values/) or use [pipes](https://contactform7.com/selectable-recipient-with-pipes/).
 
 CF7 allows you to have multiselect checkboxes, however, PDFs can't have multiple values with checkbox fields. You either need to switch to using a listbox in your PDF or rename your checkboxes such that each has a unique name and then map them appropriately.
 
