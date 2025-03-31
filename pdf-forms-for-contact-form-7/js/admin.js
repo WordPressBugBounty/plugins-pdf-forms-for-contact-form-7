@@ -65,6 +65,51 @@ jQuery(document).ready(function($) {
 		}
 	};
 	
+	var shallowCopy = function(obj)
+	{
+		if(obj === null || typeof obj !== 'object')
+			return obj;
+		if(Array.isArray(obj))
+			return obj.slice();
+		try
+		{
+			return Object.assign({}, obj);
+		}
+		catch (e)
+		{
+			console.error('shallowCopy: failed to copy value of type ' + typeof obj);
+			return obj;
+		}
+	};
+	
+	var deepCopy = function(obj)
+	{
+		// return primitive values as-is
+		if(obj === null || typeof obj !== 'object')
+			return obj;
+		
+		// use structuredClone if available (modern browsers)
+		if(typeof structuredClone === 'function')
+			try { return structuredClone(obj); } catch (e) { } // ignore failure
+		
+		// fallback implementation for older browsers
+		
+		if(Array.isArray(obj))
+			return obj.map(function(item) { return deepCopy(item); });
+		
+		try
+		{
+			var copy = {};
+			Object.keys(obj).forEach(function(key) { copy[key] = deepCopy(obj[key]); });
+			return copy;
+		}
+		catch (e)
+		{
+			console.error('deepCopy: failed to copy value of type ' + typeof obj);
+			return obj;
+		}
+	};
+	
 	var clearMessages = function() {
 		jQuery('.wpcf7-pdf-forms-settings-panel .messages').empty();
 	};
@@ -221,8 +266,8 @@ jQuery(document).ready(function($) {
 					data['options'] = options;
 				}
 				
-				var all_attachment_data = Object.assign({}, data); // shallow copy
-				var current_attachment_data = data;
+				var all_attachment_data = shallowCopy(data);
+				var current_attachment_data = shallowCopy(data);
 				
 				all_attachment_data['id'] = 'all-' + field.id;
 				all_attachment_data['text'] = field.name;
@@ -332,7 +377,7 @@ jQuery(document).ready(function($) {
 		var cf7Select2Cache = [];
 		
 		jQuery.each(cf7FieldsCache, function(i, field) {
-			field = Object.assign({}, field); // shallow copy
+			field = shallowCopy(field);
 			field.lowerText = String(field.text).toLowerCase();
 			field.mailtag = false;
 			cf7Select2Cache.push(field);
@@ -558,12 +603,14 @@ jQuery(document).ready(function($) {
 	
 	var addAttachment = function(data) {
 		
+		data = deepCopy(data);
+		
 		var attachment_id = data.attachment_id;
 		var filename = data.filename;
 		var options = data.options;
 		
 		var attachments = getAttachments();
-		attachments.push( data );
+		attachments.push(deepCopy(data));
 		setAttachments(attachments);
 		
 		jQuery('.wpcf7-pdf-forms-settings-panel .instructions').remove();
@@ -676,11 +723,8 @@ jQuery(document).ready(function($) {
 						if(count > totalNeeded)
 							return false;
 						
-						if(!item.hasOwnProperty("lowerText"))
-							item.lowerText = item.text.toLowerCase();
-						
-						var counts = item.lowerText.indexOf(upperTerm) >= 0;
-						
+						var lowerText = item.hasOwnProperty("lowerText") ? item.lowerText : item.text.toLowerCase();
+						var counts = lowerText.indexOf(upperTerm) >= 0;
 						if(counts)
 							count++;
 						
@@ -693,7 +737,7 @@ jQuery(document).ready(function($) {
 				items = items.slice((params.page - 1) * pageSize, totalNeeded); // paginate
 				
 				callback({
-					results: items,
+					results: deepCopy(items),
 					pagination: { more: more }
 				});
 			};
@@ -836,6 +880,8 @@ jQuery(document).ready(function($) {
 					var mappings = getMappings();
 					jQuery.each(data.value_mappings, function(index, value_mapping) {
 						
+						value_mapping = shallowCopy(value_mapping);
+						
 						// find mapping id
 						for(var i=0, l=mappings.length; i<l; i++)
 						{
@@ -960,9 +1006,9 @@ jQuery(document).ready(function($) {
 		
 		var value_mappings = getValueMappings();
 		
-		for(var i=0; i<value_mappings.length; i++)
-			if(value_mappings[i].mapping_id == mapping_id)
-				value_mappings.splice(i, 1);
+		value_mappings = value_mappings.filter(function(value_mapping) {
+			return value_mapping.mapping_id != mapping_id;
+		});
 		
 		setValueMappings(value_mappings);
 		runWhenDone(refreshMappings);
@@ -979,6 +1025,8 @@ jQuery(document).ready(function($) {
 		|| typeof data.cf7_value == 'undefined'
 		|| typeof data.pdf_value == 'undefined')
 			return;
+		
+		data = deepCopy(data);
 		
 		data.value_mapping_id = generateId();
 		pluginData["value_mappings"].push(data);
@@ -1069,6 +1117,19 @@ jQuery(document).ready(function($) {
 		tag.find('input.cf7-value').val(data.cf7_value);
 		tag.find('input.pdf-value').val(data.pdf_value);
 		
+		// make sure the "Delete All" button is shown in the list of value mappings for current field mapping only once
+		var manageDeleteAllValueMappingsButton = function(mapping_id) {
+			
+			var value_mapping_rows = template.parent().find('.pdf-valuemapping-row').filter(function() {
+				return jQuery(this).data('mapping_id') === mapping_id;
+			});
+			
+			value_mapping_rows.find('.delete-all-valuemappings-button').hide();
+			
+			if(value_mapping_rows.length > 1) // no need to show the "Delete All" button if there is only one value mapping
+				value_mapping_rows.last().find('.delete-all-valuemappings-button').show();
+		};
+		
 		var delete_button = tag.find('.delete-valuemapping-button');
 		delete_button.data('value_mapping_id', data.value_mapping_id);
 		delete_button.click(function(event) {
@@ -1082,14 +1143,37 @@ jQuery(document).ready(function($) {
 			
 			deleteValueMapping(jQuery(this).data('value_mapping_id'));
 			
-			jQuery(this).closest('.pdf-valuemapping-row').remove();
+			var value_mapping_row = jQuery(this).closest('.pdf-valuemapping-row');
+			var mapping_id = value_mapping_row.data('mapping_id');
+			value_mapping_row.remove();
+			manageDeleteAllValueMappingsButton(mapping_id);
+		});
+		
+		var delete_all_button = tag.find('.delete-all-valuemappings-button');
+		delete_all_button.data('mapping_id', data.mapping_id);
+		delete_all_button.click(function(event) {
+			
+			// prevent running default button click handlers
+			event.stopPropagation();
+			event.preventDefault();
+			
+			if(!confirm(wpcf7_pdf_forms.__Confirm_Delete_All_Value_Mappings))
+				return;
+			
+			var mapping_id = jQuery(this).data('mapping_id');
+			deleteValueMappings(mapping_id);
 		});
 		
 		var mappingTag = jQuery('.wpcf7-pdf-forms-admin .pdf-mapping-row[data-mapping_id="'+data.mapping_id+'"]');
 		tag.insertAfter(mappingTag);
+		
+		manageDeleteAllValueMappingsButton(data.mapping_id);
 	};
 	
 	var addMapping = function(data) {
+		
+		data = deepCopy(data);
+		
 		data.mapping_id = generateId();
 		pluginData["mappings"].push(data);
 		
@@ -1299,6 +1383,8 @@ jQuery(document).ready(function($) {
 			if(!cf7_field_data)
 				return;
 		}
+		
+		embed = deepCopy(embed);
 		
 		if(!embed.id)
 			embed.id = ++embed_id_autoinc;

@@ -3,7 +3,7 @@
  * Plugin Name: PDF Forms Filler for CF7
  * Plugin URI: https://pdfformsfiller.org/
  * Description: Build Contact Form 7 forms from PDF forms. Get PDFs auto-filled and attached to email messages and/or website responses on form submission.
- * Version: 2.2.1
+ * Version: 2.2.2
  * Requires at least: 4.8
  * Requires PHP: 5.2
  * Requires Plugins: contact-form-7
@@ -24,7 +24,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 {
 	class WPCF7_Pdf_Forms
 	{
-		const VERSION = '2.2.1';
+		const VERSION = '2.2.2';
 		const MIN_WPCF7_VERSION = '5.0';
 		const MAX_WPCF7_VERSION = '6.0.99';
 		private static $BLACKLISTED_WPCF7_VERSIONS = array();
@@ -448,6 +448,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 					'__Confirm_Delete_Attachment' => __( 'Are you sure you want to delete this file?  This will delete field mappings and image embeds associated with this file.', 'pdf-forms-for-contact-form-7' ),
 					'__Confirm_Delete_Mapping' => __( 'Are you sure you want to delete this mapping?', 'pdf-forms-for-contact-form-7' ),
 					'__Confirm_Delete_All_Mappings' => __( 'Are you sure you want to delete all mappings?', 'pdf-forms-for-contact-form-7' ),
+					'__Confirm_Delete_All_Value_Mappings' => __( 'Are you sure you want to delete all value mappings?', 'pdf-forms-for-contact-form-7' ),
 					'__Confirm_Attach_Empty_Pdf' => __( 'Are you sure you want to attach a PDF file without any form fields?', 'pdf-forms-for-contact-form-7' ),
 					'__Confirm_Delete_Embed' => __( 'Are you sure you want to delete this embeded image?', 'pdf-forms-for-contact-form-7' ),
 					'__Show_Help' => __( 'Show Help', 'pdf-forms-for-contact-form-7' ),
@@ -727,7 +728,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 				'pdf-field' => esc_html__( 'PDF field', 'pdf-forms-for-contact-form-7' ),
 				'cf7-field-or-mail-tags' => esc_html__( 'CF7 field/mail-tags', 'pdf-forms-for-contact-form-7' ),
 				'add-mapping' => esc_html__( 'Add Mapping', 'pdf-forms-for-contact-form-7' ),
-				'delete-all-mappings' => esc_html__( 'Delete All', 'pdf-forms-for-contact-form-7' ),
+				'delete-all' => esc_html__( 'Delete All', 'pdf-forms-for-contact-form-7' ),
 				'insert-tag' => esc_html__( "Insert and Link", 'pdf-forms-for-contact-form-7' ),
 				'generate-and-insert-all-tags-message' => esc_html__( "This button allows you to generate tags for all remaining unlinked PDF fields, insert them into the form and link them to their corresponding fields.", 'pdf-forms-for-contact-form-7' ),
 				'insert-and-map-all-tags' => esc_html__( "Insert & Link All", 'pdf-forms-for-contact-form-7' ),
@@ -747,7 +748,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 					esc_html__( "Have a question/comment/problem?  Feel free to use {a-href-forum}the support forum{/a} and view {a-href-tutorial}the tutorial video{/a}.", 'pdf-forms-for-contact-form-7' ),
 					array(
 						'a-href-forum' => '<a href="https://wordpress.org/support/plugin/pdf-forms-for-contact-form-7/" target="_blank">',
-						'a-href-tutorial' => '<a href="https://youtu.be/jy84xqnj0Zk" target="_blank">',
+						'a-href-tutorial' => '<a href="https://youtu.be/rATOSROQAGU" target="_blank">',
 						'/a' => '</a>',
 					)
 				),
@@ -1041,6 +1042,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 					"image/x-ms-bmp",
 					"image/svg+xml",
 					"image/webp",
+					"application/pdf",
 				);
 			
 			if( $mimetype )
@@ -1193,7 +1195,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 						throw new Exception(
 							self::replace_tags(
 								__( "File type {mime-type} of {file} is unsupported for {purpose}", 'pdf-forms-for-contact-form-7' ),
-								array( 'mime-type' => $mimetype, 'file' => $filename, 'purpose' => __( "image embedding", 'pdf-forms-for-contact-form-7') )
+								array( 'mime-type' => $mimetype, 'file' => $filename, 'purpose' => __( "image embedding", 'pdf-forms-for-contact-form-7' ) )
 							)
 						);
 					
@@ -2517,7 +2519,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 		public static function replace_tags( $string, $tags = array() )
 		{
 			return str_replace(
-				array_map( array( get_class(), 'add_curly_braces' ), array_keys( $tags ) ),
+				array_map( array( __CLASS__, 'add_curly_braces' ), array_keys( $tags ) ),
 				array_values( $tags ),
 				$string
 			);
@@ -2559,7 +2561,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 					esc_html__( "Have a question/comment/problem?  Feel free to use {a-href-forum}the support forum{/a} and view {a-href-tutorial}the tutorial video{/a}.", 'pdf-forms-for-contact-form-7' ),
 					array(
 						'a-href-forum' => '<a href="https://wordpress.org/support/plugin/pdf-forms-for-contact-form-7/" target="_blank">',
-						'a-href-tutorial' => '<a href="https://youtu.be/jy84xqnj0Zk" target="_blank">',
+						'a-href-tutorial' => '<a href="https://youtu.be/rATOSROQAGU" target="_blank">',
 						'/a' => '</a>',
 					)
 				),
@@ -2609,7 +2611,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 					esc_html__( "Have a question/comment/problem?  Feel free to use {a-href-forum}the support forum{/a} and view {a-href-tutorial}the tutorial video{/a}.", 'pdf-forms-for-contact-form-7' ),
 					array(
 						'a-href-forum' => '<a href="https://wordpress.org/support/plugin/pdf-forms-for-contact-form-7/" target="_blank">',
-						'a-href-tutorial' => '<a href="https://youtu.be/jy84xqnj0Zk" target="_blank">',
+						'a-href-tutorial' => '<a href="https://youtu.be/rATOSROQAGU" target="_blank">',
 						'/a' => '</a>',
 					)
 				),

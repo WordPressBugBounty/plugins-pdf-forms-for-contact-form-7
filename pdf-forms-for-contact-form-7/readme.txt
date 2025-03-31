@@ -1,14 +1,13 @@
 === PDF Forms Filler for CF7 ===
-Version: 2.2.1
-Stable tag: 2.2.1
-Requires at least: 4.8
-Tested up to: 6.7
-Requires PHP: 5.2
+Version: 2.2.2
+Stable tag: 2.2.2
+Tested up to: 6.8
 Tags: pdf, form, contact form, email, download
 Plugin URI: https://pdfformsfiller.org/
 Author: Maximum.Software
 Author URI: https://maximum.software/
 Contributors: maximumsoftware
+Donate link: https://github.com/sponsors/maximum-software
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -30,7 +29,7 @@ An external web API (https://pdf.ninja) is used for filling PDF forms (free usag
 
 Please see [Pdf.Ninja Terms of Use](https://pdf.ninja/#terms) and [Pdf.Ninja Privacy Policy](https://pdf.ninja/#privacy).
 
-Please see the [tutorial video](https://youtu.be/jy84xqnj0Zk) and the [documentation](https://pdfformsfiller.org/docs/cf7/) for detailed information.
+Please see the [tutorial video](https://youtu.be/rATOSROQAGU) and the [documentation](https://pdfformsfiller.org/docs/cf7/) for detailed information.
 
 Requirements:
  * PHP 5.2 or newer
@@ -65,6 +64,13 @@ Special thanks to the following sponsors of this plugin:
 4. Start using the 'PDF Form' button in the CF7 form editor.
 
 == Changelog ==
+
+= 2.2.2 =
+
+* Release date: March 31, 2025
+
+* Added 'delete all value mappings' button
+* Other minor bug fixes and improvements
 
 = 2.2.1 =
 
