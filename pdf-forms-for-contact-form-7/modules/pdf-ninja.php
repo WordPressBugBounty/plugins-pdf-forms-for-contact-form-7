@@ -976,9 +976,11 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 			{
 				try
 				{
-					check_admin_referer( 'wpcf7-pdfninja-edit' );
+					// nonce check
+					if( check_admin_referer( 'wpcf7-pdfninja-edit', '_wpnonce' ) === false )
+						throw new Exception( __( "Nonce mismatch", 'pdf-forms-for-contact-form-7' ) );
 					
-					if ( ! current_user_can( 'wpcf7_manage_integration' ) )
+					if( ! current_user_can( 'wpcf7_manage_integration' ) )
 						throw new Exception( __( "Permission denied", 'pdf-forms-for-contact-form-7' ) );
 					
 					$success = true;
@@ -1044,7 +1046,13 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 	public function display_info()
 	{
 		try { $key = $this->get_key(); } catch(Exception $e) { $key = ""; }
-		
+
+		wp_enqueue_script( 'wpcf7_pdf_forms_integration_script', plugin_dir_url( dirname( __FILE__ ) ) . 'js/integration.js', array( 'jquery' ), WPCF7_Pdf_Forms::VERSION );
+		wp_localize_script( 'wpcf7_pdf_forms_integration_script', 'wpcf7_pdf_forms_integration', array(
+			'copy_key_label' => esc_html__( 'copy key', 'pdf-forms-for-contact-form-7' ),
+			'copied_label' => esc_html__( 'copied!', 'pdf-forms-for-contact-form-7' ),
+		) );
+
 		echo WPCF7_Pdf_Forms::render( 'pdfninja_integration_info', array(
 			'top-message' =>
 				WPCF7_Pdf_Forms::replace_tags(
@@ -1063,11 +1071,11 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 			'api-version-label' => esc_html__( 'API version', 'pdf-forms-for-contact-form-7' ),
 			'api-version-1-label' => esc_html__( 'Version 1', 'pdf-forms-for-contact-form-7' ),
 			'api-version-2-label' => esc_html__( 'Version 2', 'pdf-forms-for-contact-form-7' ),
-			'api-version-1-value' => $this->get_api_version()==1 ? 'checked' : '',
-			'api-version-2-value' => $this->get_api_version()==2 ? 'checked' : '',
+			'api-version-1-value' => esc_attr( $this->get_api_version()==1 ? 'checked' : '' ),
+			'api-version-2-value' => esc_attr( $this->get_api_version()==2 ? 'checked' : '' ),
 			'security-label' => esc_html__( 'Data Security', 'pdf-forms-for-contact-form-7' ),
 			'no-ssl-verify-label' => esc_html__( 'Ignore certificate verification errors', 'pdf-forms-for-contact-form-7' ),
-			'no-ssl-verify-value' => !$this->get_verify_ssl() ? 'checked' : '',
+			'no-ssl-verify-value' => esc_attr( !$this->get_verify_ssl() ? 'checked' : '' ),
 			'security-warning' => esc_html__( 'Warning: Using plain HTTP or disabling certificate verification can lead to data leaks.', 'pdf-forms-for-contact-form-7' ),
 			'enterprise-extension-support-label' => esc_html__( 'Enterprise Extension', 'pdf-forms-for-contact-form-7' ),
 			'enterprise-extension-support-value' => esc_html( $this->get_enterprise_extension_support() ),
@@ -1106,16 +1114,16 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 			'api-version-label' => esc_html__( 'API version', 'pdf-forms-for-contact-form-7' ),
 			'api-version-1-label' => esc_html__( 'Version 1', 'pdf-forms-for-contact-form-7' ),
 			'api-version-2-label' => esc_html__( 'Version 2', 'pdf-forms-for-contact-form-7' ),
-			'api-version-1-value' => $this->get_api_version()==1 ? 'checked' : '',
-			'api-version-2-value' => $this->get_api_version()==2 ? 'checked' : '',
+			'api-version-1-value' => esc_attr( $this->get_api_version()==1 ? 'checked' : '' ),
+			'api-version-2-value' => esc_attr( $this->get_api_version()==2 ? 'checked' : '' ),
 			'security-label' => esc_html__( 'Data Security', 'pdf-forms-for-contact-form-7' ),
 			'no-ssl-verify-label' => esc_html__( 'Ignore certificate verification errors', 'pdf-forms-for-contact-form-7' ),
-			'no-ssl-verify-value' => !$this->get_verify_ssl() ? 'checked' : '',
+			'no-ssl-verify-value' => esc_attr( !$this->get_verify_ssl() ? 'checked' : '' ),
 			'email-label' => esc_html__( "Administrator's Email Address", 'pdf-forms-for-contact-form-7' ),
 			'email-value' => esc_html( $this->get_admin_email() ),
 			'security-warning' => esc_html__( 'Warning: Using plain HTTP or disabling certificate verification can lead to data leaks.', 'pdf-forms-for-contact-form-7' ),
 			'edit-link' => esc_url( $this->menu_page_url( 'action=edit' ) ),
-			'nonce' => wp_nonce_field( 'wpcf7-pdfninja-edit' ),
+			'nonce' => wp_nonce_field( 'wpcf7-pdfninja-edit', '_wpnonce', true, false ),
 			'save-label' => esc_html__( "Save", 'pdf-forms-for-contact-form-7' ),
 			'new-label' => esc_html__( "Get New Key", 'pdf-forms-for-contact-form-7' ),
 		) );

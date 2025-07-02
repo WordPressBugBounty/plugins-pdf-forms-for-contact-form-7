@@ -1,6 +1,6 @@
 === PDF Forms Filler for CF7 ===
-Version: 2.2.2
-Stable tag: 2.2.2
+Version: 2.2.3
+Stable tag: 2.2.3
 Tested up to: 6.8
 Tags: pdf, form, contact form, email, download
 Plugin URI: https://pdfformsfiller.org/
@@ -29,7 +29,9 @@ An external web API (https://pdf.ninja) is used for filling PDF forms (free usag
 
 Please see [Pdf.Ninja Terms of Use](https://pdf.ninja/#terms) and [Pdf.Ninja Privacy Policy](https://pdf.ninja/#privacy).
 
-Please see the [tutorial video](https://youtu.be/rATOSROQAGU) and the [documentation](https://pdfformsfiller.org/docs/cf7/) for detailed information.
+Please see the [tutorial video](https://youtu.be/9YoinoPM6eU) and the [documentation](https://pdfformsfiller.org/docs/cf7/) for detailed information.
+
+[youtube http://www.youtube.com/watch?v=9YoinoPM6eU]
 
 Requirements:
  * PHP 5.2 or newer
@@ -64,6 +66,14 @@ Special thanks to the following sponsors of this plugin:
 4. Start using the 'PDF Form' button in the CF7 form editor.
 
 == Changelog ==
+
+= 2.2.3 =
+
+* Release date: July 2, 2025
+
+* Tested integration with CF7 v6.1
+* Fixed CF7 v6.1 compatibility issue on CF7's Integration page (copy button)
+* Other minor fixes and improvements
 
 = 2.2.2 =
 

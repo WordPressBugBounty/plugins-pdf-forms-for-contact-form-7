@@ -3,7 +3,7 @@
  * Plugin Name: PDF Forms Filler for CF7
  * Plugin URI: https://pdfformsfiller.org/
  * Description: Build Contact Form 7 forms from PDF forms. Get PDFs auto-filled and attached to email messages and/or website responses on form submission.
- * Version: 2.2.2
+ * Version: 2.2.3
  * Requires at least: 4.8
  * Requires PHP: 5.2
  * Requires Plugins: contact-form-7
@@ -24,9 +24,9 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 {
 	class WPCF7_Pdf_Forms
 	{
-		const VERSION = '2.2.2';
+		const VERSION = '2.2.3';
 		const MIN_WPCF7_VERSION = '5.0';
-		const MAX_WPCF7_VERSION = '6.0.99';
+		const MAX_WPCF7_VERSION = '6.1.99';
 		private static $BLACKLISTED_WPCF7_VERSIONS = array();
 		
 		private static $instance = null;
@@ -442,7 +442,6 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 				
 				wp_localize_script( 'wpcf7_pdf_forms_admin_script', 'wpcf7_pdf_forms', array(
 					'WPCF7_VERSION' => WPCF7_VERSION,
-					'ajax_url' => admin_url( 'admin-ajax.php' ),
 					'ajax_nonce' => wp_create_nonce( 'wpcf7-pdf-forms-ajax-nonce' ),
 					'__Unknown_error' => __( 'Unknown error', 'pdf-forms-for-contact-form-7' ),
 					'__Confirm_Delete_Attachment' => __( 'Are you sure you want to delete this file?  This will delete field mappings and image embeds associated with this file.', 'pdf-forms-for-contact-form-7' ),
@@ -748,7 +747,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 					esc_html__( "Have a question/comment/problem?  Feel free to use {a-href-forum}the support forum{/a} and view {a-href-tutorial}the tutorial video{/a}.", 'pdf-forms-for-contact-form-7' ),
 					array(
 						'a-href-forum' => '<a href="https://wordpress.org/support/plugin/pdf-forms-for-contact-form-7/" target="_blank">',
-						'a-href-tutorial' => '<a href="https://youtu.be/rATOSROQAGU" target="_blank">',
+						'a-href-tutorial' => '<a href="https://youtu.be/9YoinoPM6eU" target="_blank">',
 						'/a' => '</a>',
 					)
 				),
@@ -2467,10 +2466,10 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 		{
 			if( ! isset( $attributes['classes'] ) )
 				$attributes['classes'] = "";
-			$attributes['classes'] = trim( $attributes['classes'] . " notice-$type" );
+			$attributes['classes'] = trim( $attributes['classes'] . " notice-" . esc_attr($type) );
 			
 			if( !isset( $attributes['label'] ) )
-				$attributes['label'] = __( "PDF Forms Filler for CF7", 'pdf-forms-for-contact-form-7' );
+				$attributes['label'] = esc_html__( "PDF Forms Filler for CF7", 'pdf-forms-for-contact-form-7' );
 			
 			if( $notice_id )
 			{
@@ -2561,7 +2560,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 					esc_html__( "Have a question/comment/problem?  Feel free to use {a-href-forum}the support forum{/a} and view {a-href-tutorial}the tutorial video{/a}.", 'pdf-forms-for-contact-form-7' ),
 					array(
 						'a-href-forum' => '<a href="https://wordpress.org/support/plugin/pdf-forms-for-contact-form-7/" target="_blank">',
-						'a-href-tutorial' => '<a href="https://youtu.be/rATOSROQAGU" target="_blank">',
+						'a-href-tutorial' => '<a href="https://youtu.be/9YoinoPM6eU" target="_blank">',
 						'/a' => '</a>',
 					)
 				),
@@ -2611,7 +2610,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 					esc_html__( "Have a question/comment/problem?  Feel free to use {a-href-forum}the support forum{/a} and view {a-href-tutorial}the tutorial video{/a}.", 'pdf-forms-for-contact-form-7' ),
 					array(
 						'a-href-forum' => '<a href="https://wordpress.org/support/plugin/pdf-forms-for-contact-form-7/" target="_blank">',
-						'a-href-tutorial' => '<a href="https://youtu.be/rATOSROQAGU" target="_blank">',
+						'a-href-tutorial' => '<a href="https://youtu.be/9YoinoPM6eU" target="_blank">',
 						'/a' => '</a>',
 					)
 				),
