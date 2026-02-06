@@ -16,11 +16,19 @@ jQuery(document).ready(function($) {
 	var tagGeneratorVersion = parseInt(wpcf7_pdf_forms.WPCF7_VERSION.split('.')[0], 10) < 6 ? 1 : 2;
 	
 	var goToFormPanel = function() {
-		jQuery('#form-panel-tab a')[0].click();
+		// prior to CF7 6.1.2
+		var link = jQuery('#form-panel-tab a')[0];
+		if(link) { link.click(); return; }
+		// CF7 6.1.2 and later
+		jQuery('#form-panel-tab')[0].click();
 	};
 	
 	var goToPdfFormFillerPanel = function() {
-		jQuery('#wpcf7-forms-panel-tab a')[0].click();
+		// prior to CF7 6.1.2
+		var link = jQuery('#wpcf7-forms-panel-tab a')[0];
+		if(link) { link.click(); return; }
+		// CF7 6.1.2 and later
+		jQuery('#wpcf7-forms-panel-tab')[0].click();
 	};
 	
 	var openTagGenerator = function() {
@@ -2310,27 +2318,39 @@ jQuery(document).ready(function($) {
 	var changeHandler = function() { loadCf7Fields(removeOldMappingsAndEmbeds); };
 	wpcf7_form.on('change', changeHandler);
 	
-	// set up a trigger for the tag generator insertion because change event isn't fired when value is changed with js
-	var oldFormContent = "";
+	// set up triggers for the tag generator insertion because change event isn't fired when value is changed programmatically
+	var oldFormContentLength = 0;
 	var changeDetectTTL = 0; // don't let the loop run forever
 	var changeDetectLoop = function() {
 		// polling for change is needed because tag insertion may happen at a later time
-		if(oldFormContent == wpcf7_form.val() && changeDetectTTL > 0)
+		if(oldFormContentLength == wpcf7_form.val().length && changeDetectTTL > 0)
 			runWhenDone(changeDetectLoop);
 		else
 			changeHandler();
 		changeDetectTTL--;
 	};
 	var changeDetect = function() {
-		oldFormContent = wpcf7_form.val();
+		oldFormContentLength = wpcf7_form.val().length;
 		changeDetectTTL = 10;
 		changeDetectLoop();
 	};
+	
+	// CF7 v5.9.8 and below
 	jQuery('form.tag-generator-panel .insert-tag').on('click', changeDetect);
 	
-	// TODO: remove this workaround, determine what is causing the tag-hint not to be filled when tag generator dialog is opened
+	// CF7 v6.0+ uses dialog elements for tag generators
+	// the dialog 'close' event fires after tag insertion, but doesn't trigger textarea change event
+	jQuery('dialog.tag-generator-dialog').on('close', function() {
+		// only handle change if a tag was actually inserted (returnValue is not empty)
+		if(this.returnValue && this.returnValue !== '') {
+			changeDetect();
+		}
+	});
+	
+	// CF7 v6.0+ calls form.reset() when opening the tag generator dialog (in tag-generator-v2.js), which clears all form fields including the tag-hint field
+	// the following workaround re-populates the tag-hint field after the tag generator dialog opens
 	if(tagGeneratorVersion == 2)
-		jQuery('button[data-target="tag-generator-panel-pdf_form"]').on("click", function(event) {
+		jQuery('button[data-target="tag-generator-panel-pdf_form"]').on("click", function() {
 			runWhenDone(function() { jQuery('.wpcf7-pdf-forms-tag-generator-panel .pdf-field-list').resetSelect2Field(); });
 		});
 	

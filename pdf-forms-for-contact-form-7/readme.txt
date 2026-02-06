@@ -1,6 +1,6 @@
 === PDF Forms Filler for CF7 ===
-Version: 2.2.3
-Stable tag: 2.2.3
+Version: 2.2.5
+Stable tag: 2.2.5
 Tested up to: 6.8
 Tags: pdf, form, contact form, email, download
 Plugin URI: https://pdfformsfiller.org/
@@ -41,7 +41,7 @@ Requirements:
 
 Known problems:
  * Some third party plugins may break the functionality of this plugin (see a list below). Try troubleshooting the problem by disabling likely plugins that may cause issues, such as plugins that modify WordPress or Contact Form 7 in radical ways.
- * Some image optimization plugins optimize PDFs and strip PDF forms from PDF files. This may cause your existing forms to break at a random point in the future (when PDF file cache times out at the API).
+ * Some image optimization plugins optimize PDFs and strip PDF forms from PDF files. This may cause your existing forms to break.
  * If you are still using the old version of the API (v1) or the old version of Enterprise Extension (v1), please note that resulting PDFs may not render properly in some PDF readers and with some UTF-8 (non-latin) characters, checkboxes and radio buttons.
 
 Known incompatible plugins:
@@ -66,6 +66,20 @@ Special thanks to the following sponsors of this plugin:
 4. Start using the 'PDF Form' button in the CF7 form editor.
 
 == Changelog ==
+
+= 2.2.5 =
+
+* Release date: October 10, 2025
+
+* Fixed a bug with CF7 v6+: inserting a tag via the tag generator doesn't reload CF7 fields
+* Minor optimization
+
+= 2.2.4 =
+
+* Release date: October 6, 2025
+
+* Tested integration with CF7 v6.1.2
+* Fixed CF7 v6.1.2 compatibility issue with panel tab switching
 
 = 2.2.3 =
 
