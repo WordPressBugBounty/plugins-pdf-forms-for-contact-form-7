@@ -3,7 +3,7 @@
  * Plugin Name: PDF Forms Filler for CF7
  * Plugin URI: https://pdfformsfiller.org/
  * Description: Build Contact Form 7 forms from PDF forms. Get PDFs auto-filled and attached to email messages and/or website responses on form submission.
- * Version: 2.2.5
+ * Version: 2.2.6
  * Requires at least: 4.8
  * Requires PHP: 5.2
  * Requires Plugins: contact-form-7
@@ -24,7 +24,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 {
 	class WPCF7_Pdf_Forms
 	{
-		const VERSION = '2.2.5';
+		const VERSION = '2.2.6';
 		const MIN_WPCF7_VERSION = '5.0';
 		const MAX_WPCF7_VERSION = '6.1.99';
 		private static $BLACKLISTED_WPCF7_VERSIONS = array();
@@ -1871,7 +1871,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 		
 		private static function escape_tag_value($value)
 		{
-			$value = esc_attr($value);
+			$value = esc_textarea($value);
 			$escape_characters = array("\\","]","|");
 			$escape_table = array('&#92;', '&#93;','&#124;');
 			$value = str_replace($escape_characters, $escape_table, $value);
@@ -2057,7 +2057,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 							{
 								$name = strval($field['name']);
 								
-								$tag = '<label>' . esc_html( $name ) . '</label>' . "\n";
+								$tag = '<label>' . esc_textarea( $name ) . '</label>' . "\n";
 								
 								$tag_flag = $attachment_id;
 								if( $all == "true" )
@@ -2741,7 +2741,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 									array(
 										'icon' => '<span class="dashicons dashicons-download"></span>',
 										'a-href-url' => '<a href="' . esc_attr( $file['url'] ) . '" download>',
-										'filename' => esc_html( $file['filename'] ),
+										'filename' => esc_textarea( $file['filename'] ),
 										'/a' => '</a>',
 										'i' => '<span class="file-size">',
 										'size' => esc_html( size_format( filesize( $file['filepath'] ) ) ),
