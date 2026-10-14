@@ -1,7 +1,6 @@
 <?php
 
-if( ! defined( 'ABSPATH' ) )
-	return;
+if( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 {
@@ -16,7 +15,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 	
 	private function __construct() { }
 	
-	/*
+	/**
 	 * Returns a global instance of this class
 	 */
 	public static function get_instance()
@@ -27,7 +26,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return self::$instance;
 	}
 	
-	/*
+	/**
 	 * Returns service name that this service provides
 	 */
 	public function get_service_name()
@@ -35,7 +34,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return 'pdf_ninja';
 	}
 	
-	/*
+	/**
 	 * WPCF7_Service defined function
 	 */
 	public function get_title()
@@ -43,7 +42,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return __( 'Pdf.Ninja API', 'pdf-forms-for-contact-form-7' );
 	}
 	
-	/*
+	/**
 	 * WPCF7_Service defined function
 	 */
 	public function is_active()
@@ -60,7 +59,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		}
 	}
 	
-	/*
+	/**
 	 * WPCF7_Service defined function
 	 */
 	public function get_categories()
@@ -68,12 +67,12 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return array( 'pdf_forms' );
 	}
 	
-	/*
+	/**
 	 * WPCF7_Service defined function
 	 */
 	public function icon() { }
 	
-	/*
+	/**
 	 * WPCF7_Service defined function
 	 */
 	public function link()
@@ -81,7 +80,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		echo '<a href="https://pdf.ninja/">Pdf.Ninja</a>';
 	}
 	
-	/*
+	/**
 	 * Returns (and initializes, if necessary) the current API key
 	 */
 	public function get_key()
@@ -124,7 +123,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return $this->key;
 	}
 	
-	/*
+	/**
 	 * Sets the API key
 	 */
 	public function set_key( $value )
@@ -153,7 +152,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return null;
 	}
 	
-	/*
+	/**
 	 * Determines administrator's email address (for use with requesting a new key from the API)
 	 */
 	private function get_admin_email()
@@ -169,7 +168,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return $email;
 	}
 	
-	/*
+	/**
 	 * Requests a key from the API server
 	 */
 	public function generate_key( $email = null )
@@ -205,7 +204,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return $key;
 	}
 	
-	/*
+	/**
 	 * Returns (and initializes, if necessary) the current API URL
 	 */
 	public function get_api_url()
@@ -219,7 +218,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return $this->api_url;
 	}
 	
-	/*
+	/**
 	 * Sets the current API URL
 	 */
 	public function set_api_url( $value )
@@ -229,7 +228,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return true;
 	}
 	
-	/*
+	/**
 	 * Returns (and initializes, if necessary) the api version setting
 	 */
 	public function get_api_version()
@@ -247,7 +246,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return $this->api_version;
 	}
 	
-	/*
+	/**
 	 * Sets the api version setting
 	 */
 	public function set_api_version( $value )
@@ -260,7 +259,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return true;
 	}
 	
-	/*
+	/**
 	 * Returns (and initializes, if necessary) the verify ssl setting
 	 */
 	public function get_verify_ssl()
@@ -278,7 +277,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return $this->verify_ssl;
 	}
 	
-	/*
+	/**
 	 * Sets the verify ssl setting
 	 */
 	public function set_verify_ssl( $value )
@@ -288,7 +287,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return true;
 	}
 	
-	/*
+	/**
 	 * Generates common set of arguments to be used with remote http requests
 	 */
 	private function wp_remote_args()
@@ -307,7 +306,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		);
 	}
 	
-	/*
+	/**
 	 * Returns true if specified function is disabled with PHP security settings
 	 */
 	private function is_function_disabled( $function_name )
@@ -322,7 +321,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return false;
 	}
 	
-	/*
+	/**
 	 * Returns true if the Enterprise Extension is supported on the system
 	 */
 	private $enterprise_extension_support = null;
@@ -338,7 +337,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		
 		try
 		{
-			$required_php_version = '5.4.0';
+			$required_php_version = '5.6.0';
 			if( version_compare( PHP_VERSION, $required_php_version ) < 0 )
 			{
 				$error = WPCF7_Pdf_Forms::replace_tags(
@@ -491,7 +490,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return $this->enterprise_extension_support;
 	}
 	
-	/*
+	/**
 	 * Helper function for processing the API response
 	 */
 	private function api_process_response( $response )
@@ -554,59 +553,35 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return $result;
 	}
 	
-	/*
-	 * Helper function that retries GET request if the file needs to be re-uploaded or md5 sum recalculated
+	/**
+	 * Helper function that calls and retries an API request if the first call fails with a resolvable error
 	 */
-	private function api_get_retry_attachment( $attachment_id, $endpoint, $params )
+	private function api_retry_attachment( $attachment_id, callable $request_fn )
 	{
 		try
 		{
-			return $this->api_get( $endpoint, $params );
+			return $request_fn();
 		}
 		catch( WPCF7_Pdf_Ninja_Exception $e )
 		{
 			$reason = $e->getReason();
 			if( $reason == 'noSuchFileId' || $reason == 'md5sumMismatch' )
 			{
+				// file needs to be re-uploaded and/or md5sum updated
 				if( $this->is_local_attachment( $attachment_id ) )
+					// re-upload file (also updates md5sum)
 					$this->api_upload_file( $attachment_id );
 				else
-					// update local md5sum
-					$params['md5sum'] = WPCF7_Pdf_Forms::update_attachment_md5sum( $attachment_id );
+					// only update local md5sum
+					WPCF7_Pdf_Forms::update_attachment_md5sum( $attachment_id );
 				
-				return $this->api_get( $endpoint, $params );
+				return $request_fn();
 			}
 			throw $e;
 		}
 	}
 	
-	/*
-	 * Helper function that retries POST request if the file needs to be re-uploaded or md5 sum recalculated
-	 */
-	private function api_post_retry_attachment( $attachment_id, $endpoint, $payload, $headers = array(), $args_override = array() )
-	{
-		try
-		{
-			return $this->api_post( $endpoint, $payload, $headers, $args_override );
-		}
-		catch( WPCF7_Pdf_Ninja_Exception $e )
-		{
-			$reason = $e->getReason();
-			if( $reason == 'noSuchFileId' || $reason == 'md5sumMismatch' )
-			{
-				if( $this->is_local_attachment( $attachment_id ) )
-					$this->api_upload_file( $attachment_id );
-				else
-					// update local md5sum
-					$params['md5sum'] = WPCF7_Pdf_Forms::update_attachment_md5sum( $attachment_id );
-				
-				return $this->api_post( $endpoint, $payload, $headers, $args_override );
-			}
-			throw $e;
-		}
-	}
-	
-	/*
+	/**
 	 * Helper function for communicating with the API via the GET request
 	 */
 	private function api_get( $endpoint, $params )
@@ -616,7 +591,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return $this->api_process_response( $response );
 	}
 	
-	/*
+	/**
 	 * Helper function for communicating with the API via the POST request
 	 */
 	private function api_post( $endpoint, $payload, $headers = array(), $args_override = array() )
@@ -638,7 +613,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return $this->api_process_response( $response );
 	}
 	
-	/*
+	/**
 	 * Communicates with the API server to get a new key
 	 */
 	public function api_get_key( $email )
@@ -651,7 +626,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return $result['key'];
 	}
 	
-	/*
+	/**
 	 * Generates and returns file id to be used with the API server
 	 */
 	private function get_file_id( $attachment_id )
@@ -665,7 +640,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return substr( $file_id, 0, 40 );
 	}
 	
-	/*
+	/**
 	 * Returns true if file hasn't yet been uploaded to the API server
 	 */
 	private function is_new_file( $attachment_id )
@@ -673,7 +648,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return WPCF7_Pdf_Forms::get_meta( $attachment_id, 'file_id' ) == null;
 	}
 	
-	/*
+	/**
 	 * Returns true if attachment file is on the local file system
 	 */
 	private function is_local_attachment( $attachment_id )
@@ -682,7 +657,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return $filepath !== false && is_readable( $filepath ) !== false;
 	}
 	
-	/*
+	/**
 	 * Returns file URL to be used with the API server
 	 */
 	private function get_file_url( $attachment_id )
@@ -695,7 +670,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return $fileurl;
 	}
 	
-	/*
+	/**
 	 * Communicates with the API to upload the media file
 	 */
 	public function api_upload_file( $attachment_id )
@@ -723,7 +698,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		
 		$filepath = get_attached_file( $attachment_id );
 		$filename = wp_basename( $filepath );
-		$filecontents = file_get_contents( $filepath );
+		$filecontents = file_get_contents( $filepath ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- $filepath is a local filesystem path and can't be used with wp_remote_get()
 		
 		$payload .= "--{$boundary}\r\n"
 		          . "Content-Disposition: form-data; name=\"file\"; filename=\"{$filename}\"\r\n"
@@ -744,29 +719,31 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return true;
 	}
 	
-	/*
+	/**
 	 * Helper function for communicating with the API to obtain the PDF file fields
 	 */
 	public function api_get_info_helper( $endpoint, $attachment_id )
 	{
-		$params = array(
-			'md5sum' => WPCF7_Pdf_Forms::get_attachment_md5sum( $attachment_id ),
-			'key'    => $this->get_key(),
-		);
-		
-		if( $this->is_local_attachment( $attachment_id ) )
-		{
-			if( $this->is_new_file( $attachment_id ) )
-				$this->api_upload_file( $attachment_id );
-			$params['fileId'] = $this->get_file_id( $attachment_id );
-		}
-		else
-			$params['fileUrl'] = $this->get_file_url( $attachment_id );
-		
-		return $this->api_get_retry_attachment( $attachment_id, $endpoint, $params );
+		return $this->api_retry_attachment( $attachment_id, function() use ( $endpoint, $attachment_id ) {
+			$params = array(
+				'md5sum' => WPCF7_Pdf_Forms::get_attachment_md5sum( $attachment_id ),
+				'key'    => $this->get_key(),
+			);
+			
+			if( $this->is_local_attachment( $attachment_id ) )
+			{
+				if( $this->is_new_file( $attachment_id ) )
+					$this->api_upload_file( $attachment_id );
+				$params['fileId'] = $this->get_file_id( $attachment_id );
+			}
+			else
+				$params['fileUrl'] = $this->get_file_url( $attachment_id );
+			
+			return $this->api_get( $endpoint, $params );
+		});
 	}
 	
-	/*
+	/**
 	 * Communicates with the API to obtain the PDF file fields
 	 */
 	public function api_get_fields( $attachment_id )
@@ -779,7 +756,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return $result['fields'];
 	}
 	
-	/*
+	/**
 	 * Communicates with the API to obtain the PDF file information
 	 */
 	public function api_get_info( $attachment_id )
@@ -794,29 +771,31 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return $result;
 	}
 	
-	/*
+	/**
 	 * Communicates with the API to get image of PDF pages
 	 */
 	public function api_image( $destfile, $attachment_id, $page )
 	{
-		$params = array(
-			'md5sum' => WPCF7_Pdf_Forms::get_attachment_md5sum( $attachment_id ),
-			'key'    => $this->get_key(),
-			'type'   => 'jpeg',
-			'page'   => intval($page),
-			'dumpFile' => true,
-		);
-		
-		if( $this->is_local_attachment( $attachment_id ) )
-		{
-			if( $this->is_new_file( $attachment_id ) )
-				$this->api_upload_file( $attachment_id );
-			$params['fileId'] = $this->get_file_id( $attachment_id );
-		}
-		else
-			$params['fileUrl'] = $this->get_file_url( $attachment_id );
-		
-		$result = $this->api_get_retry_attachment( $attachment_id, 'image', $params );
+		$result = $this->api_retry_attachment( $attachment_id, function() use ( $attachment_id, $page ) {
+			$params = array(
+				'md5sum' => WPCF7_Pdf_Forms::get_attachment_md5sum( $attachment_id ),
+				'key'    => $this->get_key(),
+				'type'   => 'jpeg',
+				'page'   => intval($page),
+				'dumpFile' => true,
+			);
+			
+			if( $this->is_local_attachment( $attachment_id ) )
+			{
+				if( $this->is_new_file( $attachment_id ) )
+					$this->api_upload_file( $attachment_id );
+				$params['fileId'] = $this->get_file_id( $attachment_id );
+			}
+			else
+				$params['fileUrl'] = $this->get_file_url( $attachment_id );
+			
+			return $this->api_get( 'image', $params );
+		});
 		
 		if( ! isset( $result['content'] ) || ! isset( $result['content_type'] ) || $result['content_type'] != 'image/jpeg' )
 			throw new Exception( __( "Pdf.Ninja API server did not send an expected response", 'pdf-forms-for-contact-form-7' ) );
@@ -827,10 +806,20 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return true;
 	}
 	
-	/*
-	 * Helper function for communicating with the API to generate PDF file
+	/**
+	 * Builds the multipart POST payload for PDF generation requests
+	 * 
+	 * @param int   $attachment_id The attachment ID
+	 * @param array $data          The form data to encode
+	 * @param array $embeds        The embedded images
+	 * @param array $options       The request options
+	 * 
+	 * @return array Associative array with the following keys:
+	 *     'payload' (string) The multipart payload body
+	 *     'headers' (array)  The request headers
+	 *     'args'    (array)  The request argument overrides
 	 */
-	private function api_pdf_helper( $destfile, $endpoint, $attachment_id, $data, $embeds, $options )
+	private function build_pdf_payload( $attachment_id, $data, $embeds, $options )
 	{
 		if( !is_array ( $data ) )
 			$data = array();
@@ -908,7 +897,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		foreach( $files as $fileId => $filepath )
 		{
 			$filename = wp_basename( $filepath );
-			$filecontents = file_get_contents( $filepath );
+			$filecontents = file_get_contents( $filepath ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- $filepath is a local filesystem path and can't be used with wp_remote_get()
 			
 			$payload .= "--{$boundary}\r\n"
 			          . "Content-Disposition: form-data; name=\"images[{$fileId}]\"; filename=\"{$filename}\"\r\n"
@@ -922,7 +911,22 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		$headers  = array( 'Content-Type' => 'multipart/form-data; boundary=' . $boundary );
 		$args = array( 'timeout' => 300 );
 		
-		$result = $this->api_post_retry_attachment( $attachment_id, $endpoint, $payload, $headers, $args );
+		return array(
+			'payload' => $payload,
+			'headers' => $headers,
+			'args'    => $args,
+		);
+	}
+	
+	/**
+	 * Helper function for communicating with the API to generate PDF file
+	 */
+	private function api_pdf_helper( $destfile, $endpoint, $attachment_id, $data, $embeds, $options )
+	{
+		$result = $this->api_retry_attachment( $attachment_id, function() use ( $endpoint, $attachment_id, $data, $embeds, $options ) {
+			$request = $this->build_pdf_payload( $attachment_id, $data, $embeds, $options );
+			return $this->api_post( $endpoint, $request['payload'], $request['headers'], $request['args'] );
+		});
 		
 		if( ! isset( $result['content'] ) || ! isset( $result['content_type'] ) || $result['content_type'] != 'application/pdf' )
 			throw new Exception( __( "Pdf.Ninja API server did not send an expected response", 'pdf-forms-for-contact-form-7' ) );
@@ -933,7 +937,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return true;
 	}
 	
-	/*
+	/**
 	 * Communicates with the API to fill fields in the PDF file
 	 */
 	public function api_fill( $destfile, $attachment_id, $data, $options = array() )
@@ -941,7 +945,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return $this->api_pdf_helper( $destfile, 'fill', $attachment_id, $data, array(), $options );
 	}
 	
-	/*
+	/**
 	 * Communicates with the API to fill fields in the PDF file
 	 */
 	public function api_fill_embed( $destfile, $attachment_id, $data, $embeds, $options = array() )
@@ -949,7 +953,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return $this->api_pdf_helper( $destfile, 'fillembed', $attachment_id, $data, $embeds, $options );
 	}
 	
-	/*
+	/**
 	 * Helper function for getting menu page URL
 	 */
 	private function menu_page_url( $args = '' )
@@ -965,7 +969,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		return $url;
 	}
 	
-	/*
+	/**
 	 * WPCF7_Service defined function used to process integration POST requests
 	 */
 	public function load( $action = '' )
@@ -1018,7 +1022,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		}
 	}
 	
-	/*
+	/**
 	 * WPCF7_Service defined function used to display integration web UI
 	 */
 	public function display( $action = '' )
@@ -1040,14 +1044,14 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		}
 	}
 	
-	/*
+	/**
 	 * Displays integration info web UI
 	 */
 	public function display_info()
 	{
 		try { $key = $this->get_key(); } catch(Exception $e) { $key = ""; }
 
-		wp_enqueue_script( 'wpcf7_pdf_forms_integration_script', plugin_dir_url( dirname( __FILE__ ) ) . 'js/integration.js', array( 'jquery' ), WPCF7_Pdf_Forms::VERSION );
+		wp_enqueue_script( 'wpcf7_pdf_forms_integration_script', plugin_dir_url( dirname( __FILE__ ) ) . 'js/integration.js', array( 'jquery' ), WPCF7_Pdf_Forms::VERSION, true );
 		wp_localize_script( 'wpcf7_pdf_forms_integration_script', 'wpcf7_pdf_forms_integration', array(
 			'copy_key_label' => esc_html__( 'copy key', 'pdf-forms-for-contact-form-7' ),
 			'copied_label' => esc_html__( 'copied!', 'pdf-forms-for-contact-form-7' ),
@@ -1084,7 +1088,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		) );
 	}
 	
-	/*
+	/**
 	 * Displays integration error web UI
 	 */
 	public function display_error()
@@ -1097,7 +1101,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		) );
 	}
 	
-	/*
+	/**
 	 * Displays integration edit web UI
 	 */
 	public function display_edit()
@@ -1129,7 +1133,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 		) );
 	}
 	
-	/*
+	/**
 	 * WPCF7_Service defined function
 	 */
 	public function admin_notice( $message = '' )
@@ -1152,7 +1156,7 @@ class WPCF7_Pdf_Ninja extends WPCF7_Pdf_Forms_Service
 			) );
 	}
 	
-	/*
+	/**
 	 * This function gets called to display admin notices
 	 */
 	public function admin_notices()

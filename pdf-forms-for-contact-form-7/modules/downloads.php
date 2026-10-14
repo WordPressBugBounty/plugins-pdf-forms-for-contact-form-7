@@ -1,9 +1,8 @@
 <?php
 
-if( ! defined( 'ABSPATH' ) )
-	return;
+if( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-if( ! class_exists( 'WPCF7_Pdf_Forms_Downloads' ) )
+if( ! class_exists( 'WPCF7_Pdf_Forms_Downloads', false ) )
 {
 	class WPCF7_Pdf_Forms_Downloads
 	{
@@ -19,13 +18,13 @@ if( ! class_exists( 'WPCF7_Pdf_Forms_Downloads' ) )
 		{
 			$uploads = wp_upload_dir( null, false );
 			$subdir = 'wpcf7_pdf_forms_downloads';
-			$this->downloads_path = path_join( $uploads['basedir'], $subdir );
+			$this->downloads_path = trailingslashit( $uploads['basedir'] ) . $subdir;
 			$this->downloads_url = $uploads['baseurl'] . '/' . $subdir;
 			if( defined( 'WPCF7_PDF_FORMS_DOWNLOADS_TIMEOUT_SECONDS' ) )
 				$this->downloads_timeout = WPCF7_PDF_FORMS_DOWNLOADS_TIMEOUT_SECONDS;
 		}
 		
-		/*
+		/**
 		 * Returns a global instance of this class
 		 */
 		public static function get_instance()
@@ -72,7 +71,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms_Downloads' ) )
 		 */
 		public function get_full_path()
 		{
-			return path_join( $this->get_downloads_path(), $this->get_subdir() );
+			return trailingslashit( $this->get_downloads_path() ) . $this->get_subdir();
 		}
 		
 		/**
@@ -92,7 +91,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms_Downloads' ) )
 			
 			wp_mkdir_p( $path );
 			
-			$index_file = path_join( $path, 'index.php' );
+			$index_file = trailingslashit( $path ) . 'index.php';
 			
 			if( file_exists( $index_file ) )
 				return;
@@ -193,7 +192,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms_Downloads' ) )
 								closedir( $temp_item_dir );
 							}
 							
-							rmdir( $temp_item_path );
+							@rmdir( $temp_item_path );
 						}
 					}
 				}

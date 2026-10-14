@@ -1,9 +1,8 @@
 <?php
 
-if( ! defined( 'ABSPATH' ) )
-	return;
+if( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-if( ! class_exists( 'WPCF7_Pdf_Forms_Storage' ) )
+if( ! class_exists( 'WPCF7_Pdf_Forms_Storage', false ) )
 {
 	class WPCF7_Pdf_Forms_Storage
 	{
@@ -14,7 +13,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms_Storage' ) )
 		
 		private function __construct() { }
 		
-		/*
+		/**
 		 * Returns a global instance of this class
 		 */
 		public static function get_instance()
@@ -83,7 +82,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms_Storage' ) )
 		 */
 		public function get_full_path()
 		{
-			return path_join( $this->get_storage_path(), $this->get_subpath() );
+			return trailingslashit( $this->get_storage_path() ) . $this->get_subpath();
 		}
 		
 		/**

@@ -1,0 +1,28 @@
+{
+    "name": "maximum-software/pdf-forms-for-contact-form-7",
+    "description": "Build Contact Form 7 forms from PDF forms. Get PDFs auto-filled and attached to email messages and/or website responses on form submission.",
+    "version": "2.2.7",
+    "type": "wordpress-plugin",
+    "license": "GPL-3.0-only",
+    "authors": [
+        {
+            "name": "Maximum Software Inc",
+            "email": "contact@maximum.software"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=5.6",
+        "select2/select2": "4.0.13"
+    },
+    "config": {
+        "process-timeout": 3600,
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}

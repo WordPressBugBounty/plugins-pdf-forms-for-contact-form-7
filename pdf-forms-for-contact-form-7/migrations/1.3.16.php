@@ -1,9 +1,8 @@
 <?php
 	
-	if( ! defined( 'ABSPATH' ) )
-		return;
+	if( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 	
-	if( ! class_exists('WPCF7') )
+	if( ! class_exists( 'WPCF7', false ) )
 		return;
 	
 	// if no Pdf.Ninja API version is set, set it to v1 to allow old forms to work in the same way as before

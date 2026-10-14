@@ -3,9 +3,9 @@
  * Plugin Name: PDF Forms Filler for CF7
  * Plugin URI: https://pdfformsfiller.org/
  * Description: Build Contact Form 7 forms from PDF forms. Get PDFs auto-filled and attached to email messages and/or website responses on form submission.
- * Version: 2.2.6
+ * Version: 2.2.7
  * Requires at least: 4.8
- * Requires PHP: 5.2
+ * Requires PHP: 5.6
  * Requires Plugins: contact-form-7
  * Author: Maximum.Software
  * Author URI: https://maximum.software/
@@ -15,18 +15,15 @@
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  */
 
-if( ! defined( 'ABSPATH' ) )
-	return;
+if( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-require_once untrailingslashit( dirname( __FILE__ ) ) . '/inc/tgm-config.php';
-
-if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
+if( ! class_exists( 'WPCF7_Pdf_Forms', false ) )
 {
 	class WPCF7_Pdf_Forms
 	{
-		const VERSION = '2.2.6';
+		const VERSION = '2.2.7';
 		const MIN_WPCF7_VERSION = '5.0';
-		const MAX_WPCF7_VERSION = '6.1.99';
+		const MAX_WPCF7_VERSION = '6.2.99';
 		private static $BLACKLISTED_WPCF7_VERSIONS = array();
 		
 		private static $instance = null;
@@ -44,7 +41,6 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 			add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 			add_action( 'plugins_loaded', array( $this, 'plugin_init' ) );
 			add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), array( $this, 'action_links' ) );
-			add_action( 'upgrader_process_complete', array( $this, 'upgrader_process_complete' ), 99, 2 );
 			register_activation_hook( __FILE__, array( $this, 'plugin_activated' ) );
 			register_deactivation_hook( __FILE__, array( $this, 'plugin_deactivated' ) );
 			add_action( 'wpcf7_pdf_forms_cron', array( $this, 'cron' ) );
@@ -70,7 +66,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 			
 			add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 			
-			if( ! class_exists('WPCF7') || ! defined( 'WPCF7_VERSION' ) )
+			if( ! class_exists( 'WPCF7', false ) || ! defined( 'WPCF7_VERSION' ) )
 				return;
 			
 			add_action( 'wp_enqueue_scripts', array( $this, 'front_end_enqueue_scripts' ) );
@@ -105,8 +101,6 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 			
 			// hook that allows to copy media and mapping
 			add_filter( 'wpcf7_copy', array( $this, 'duplicate_form_hook' ), 10, 2 );
-			
-			add_filter( 'cron_schedules', array( $this, 'cron_schedules' ) );
 			
 			// TODO: allow users to run this manually
 			add_action( 'admin_init', array( $this, 'upgrade_data' ) );
@@ -162,20 +156,6 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 		}
 		
 		/**
-		 * Hook that adds a cron schedule
-		 */
-		public function cron_schedules( $schedules )
-		{
-			$interval = $this->get_downloads()->get_timeout();
-			$display = self::replace_tags( __( "Every {interval} seconds", 'pdf-forms-for-contact-form-7' ), array( 'interval' => $interval ) );
-			$schedules['wpcf7_pdf_forms_cron_frequency'] = array(
-				'interval' => $interval,
-				'display' => $display
-			);
-			return $schedules;
-		}
-		
-		/**
 		 * Enables cron
 		 */
 		private function enable_cron()
@@ -196,7 +176,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 			}
 			
 			if( $due === false )
-				wp_schedule_event( $current_time, 'wpcf7_pdf_forms_cron_frequency', 'wpcf7_pdf_forms_cron' );
+				wp_schedule_event( $current_time, 'hourly', 'wpcf7_pdf_forms_cron' );
 		}
 		
 		/**
@@ -216,29 +196,6 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 		}
 		
 		/**
-		 * Runs after plugin updates and triggers data migration
-		 */
-		public function upgrader_process_complete( $upgrader, $hook_extra )
-		{
-			$plugin_path = plugin_basename( __FILE__ );
-			
-			if( $hook_extra['action'] == 'update'
-			&& $hook_extra['type'] == 'plugin'
-			&& isset( $hook_extra['plugins'] )
-			&& is_array( $hook_extra['plugins'] ) )
-			{
-				foreach( $hook_extra['plugins'] as $plugin )
-				{
-					if( $plugin == $plugin_path )
-					{
-						set_transient( 'wpcf7_pdf_forms_updated_old_version', self::VERSION );
-						break;
-					}
-				}
-			}
-		}
-		
-		/**
 		 * Returns sorted list of data migration scripts in the migrations directory
 		 */
 		private function get_migrations()
@@ -250,7 +207,6 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 			
 			foreach( $contents as $file )
 			{
-				$extension = end( explode( ".", $file ) );
 				$filepath = $dir . DIRECTORY_SEPARATOR . $file;
 				if( is_file( $filepath ) )
 				if( preg_match("/^(\d+\.\d+\.\d+)\.php$/u", $file, $matches) )
@@ -266,28 +222,30 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 		}
 		
 		/**
-		 * Runs data migration when triggered
+		 * Runs data migration when the stored version differs from the current version
 		 */
 		public function upgrade_data()
 		{
 			if( wp_doing_ajax() )
 				return;
 			
-			$old_version = get_transient( 'wpcf7_pdf_forms_updated_old_version' );
-			if( !$old_version )
+			$stored_version = get_option( 'wpcf7_pdf_forms_version' );
+			
+			if( $stored_version === self::VERSION )
 				return;
 			
-			delete_transient( 'wpcf7_pdf_forms_updated_old_version' );
-			
-			$new_version = self::VERSION;
-			
-			$migrations = $this->get_migrations();
-			foreach($migrations as $version => $script)
+			if( $stored_version )
 			{
-				if( version_compare( $version, $old_version ) > 0
-				&& version_compare( $version, $new_version ) <= 0 )
-					$this->run_data_migration( $script );
+				$migrations = $this->get_migrations();
+				foreach( $migrations as $version => $script )
+				{
+					if( version_compare( $version, $stored_version ) > 0
+					&& version_compare( $version, self::VERSION ) <= 0 )
+						$this->run_data_migration( $script );
+				}
 			}
+			
+			update_option( 'wpcf7_pdf_forms_version', self::VERSION, true );
 		}
 		
 		/**
@@ -330,7 +288,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 		 */
 		public function admin_notices()
 		{
-			if( ( ! class_exists('WPCF7') || ! defined( 'WPCF7_VERSION' ) ) )
+			if( ( ! class_exists( 'WPCF7', false ) || ! defined( 'WPCF7_VERSION' ) ) )
 			{
 				if( current_user_can( 'activate_plugins' ) )
 					echo WPCF7_Pdf_Forms::render_error_notice( 'cf7-not-installed', array(
@@ -426,18 +384,18 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 		 */
 		public function admin_enqueue_scripts( $hook )
 		{
-			wp_register_script( 'wpcf7_pdf_forms_notices_script', plugin_dir_url( __FILE__ ) . 'js/notices.js', array( 'jquery' ), self::VERSION );
+			wp_register_script( 'wpcf7_pdf_forms_notices_script', plugin_dir_url( __FILE__ ) . 'js/notices.js', array( 'jquery' ), self::VERSION, true );
 			wp_enqueue_script( 'wpcf7_pdf_forms_notices_script' );
 			
-			if( ! class_exists('WPCF7') || ! defined( 'WPCF7_VERSION' ) )
+			if( ! class_exists( 'WPCF7', false ) || ! defined( 'WPCF7_VERSION' ) )
 				return;
 			
 			if( false !== strpos($hook, 'wpcf7') )
 			{
-				wp_register_style( 'select2', plugin_dir_url( __FILE__ ) . 'css/select2.min.css', array(), '4.0.13');
-				wp_register_script( 'select2', plugin_dir_url( __FILE__ ) . 'js/select2/select2.min.js', array( 'jquery' ), '4.0.13');
+				wp_register_style( 'select2', plugin_dir_url( __FILE__ ) . 'vendor/select2/select2/dist/css/select2.min.css', array(), '4.0.13');
+				wp_register_script( 'select2', plugin_dir_url( __FILE__ ) . 'vendor/select2/select2/dist/js/select2.full.min.js', array( 'jquery' ), '4.0.13', true );
 				
-				wp_register_script( 'wpcf7_pdf_forms_admin_script', plugin_dir_url( __FILE__ ) . 'js/admin.js', array( 'jquery', 'jcrop', 'select2' ), self::VERSION );
+				wp_register_script( 'wpcf7_pdf_forms_admin_script', plugin_dir_url( __FILE__ ) . 'js/admin.js', array( 'jquery', 'jcrop', 'select2' ), self::VERSION, true );
 				wp_register_style( 'wpcf7_pdf_forms_admin_style', plugin_dir_url( __FILE__ ) . 'css/admin.css', array( 'jcrop', 'select2' ), self::VERSION );
 				
 				wp_localize_script( 'wpcf7_pdf_forms_admin_script', 'wpcf7_pdf_forms', array(
@@ -460,6 +418,19 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 					'__All_PDFs' => __( 'All PDFs', 'pdf-forms-for-contact-form-7' ),
 					'__All_Pages' => __( 'All', 'pdf-forms-for-contact-form-7' ),
 					'__Null_Value_Mapping' => __( '--- EMPTY ---', 'pdf-forms-for-contact-form-7' ),
+					'select2' => array(
+						'__Error_Loading' => __( 'The results could not be loaded.', 'pdf-forms-for-contact-form-7' ),
+						'__Input_Too_Long_Singular' => __( 'Please delete 1 character', 'pdf-forms-for-contact-form-7' ),
+						'__Input_Too_Long_Plural' => __( 'Please delete {count} characters', 'pdf-forms-for-contact-form-7' ),
+						'__Input_Too_Short_Singular' => __( 'Please enter 1 or more characters', 'pdf-forms-for-contact-form-7' ),
+						'__Input_Too_Short_Plural' => __( 'Please enter {count} or more characters', 'pdf-forms-for-contact-form-7' ),
+						'__Loading_More' => __( 'Loading more results…', 'pdf-forms-for-contact-form-7' ),
+						'__Maximum_Selected_Singular' => __( 'You can only select 1 item', 'pdf-forms-for-contact-form-7' ),
+						'__Maximum_Selected_Plural' => __( 'You can only select {count} items', 'pdf-forms-for-contact-form-7' ),
+						'__No_Results' => __( 'No results found', 'pdf-forms-for-contact-form-7' ),
+						'__Searching' => __( 'Searching…', 'pdf-forms-for-contact-form-7' ),
+						'__Remove_All_Items' => __( 'Remove all items', 'pdf-forms-for-contact-form-7' ),
+					),
 				) );
 				
 				add_thickbox();
@@ -592,8 +563,20 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 			return $attachment_id;
 		}
 		
-		private static $pdf_options = array('skip_empty' => false, 'attach_to_mail_1' => true, 'attach_to_mail_2' => false, 'flatten' => false, 'filename' => "", 'save_directory'=>"", 'download_link' => false, 'download_link_auto' => false );
-		private static $public_pdf_options = array('download_link', 'download_link_auto');
+		private static $pdf_options = array(
+			'skip_empty' => false,
+			'attach_to_mail_1' => true,
+			'attach_to_mail_2' => false,
+			'flatten' => false,
+			'filename' => "",
+			'save_directory' => "",
+			'download_link' => false,
+			'download_link_auto' => false,
+		);
+		private static $public_pdf_options = array(
+			'download_link',
+			'download_link_auto',
+		);
 		
 		/**
 		 * Updates post attachment options
@@ -705,8 +688,11 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 			if( $service && is_callable( array( $service, 'thickbox_messages' ) ) )
 				$messages .= $service->thickbox_messages();
 			
+			$current = WPCF7_ContactForm::get_current();
+			$post_id = $current ? $current->id() : 0;
+			
 			echo self::render( 'settings_panel', array(
-				'post-id' => esc_html( WPCF7_ContactForm::get_current()->id() ),
+				'post-id' => esc_html( $post_id ),
 				'pdf-forms-filler-title' => esc_html__( "PDF Forms Filler", 'pdf-forms-for-contact-form-7' ),
 				'messages' => $messages,
 				'instructions' => esc_html__( "You can use this panel to attach a PDF file to this contact form and link form-tags and mail-tags to fields in the PDF file. It is possible to link a combination of mail-tags to PDF fields. You can also embed images (from URLs or attached files) into the PDF file. Changes here are applied when the contact form is saved.", 'pdf-forms-for-contact-form-7' ),
@@ -988,25 +974,11 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 			
 			if( function_exists( 'finfo_open' ) )
 			{
-				if( version_compare( phpversion(), "5.3" ) < 0 )
+				$finfo = finfo_open( FILEINFO_MIME_TYPE );
+				if( $finfo )
 				{
-					$finfo = finfo_open( FILEINFO_MIME );
-					if( $finfo )
-					{
-						$mimetype = finfo_file( $finfo, $filepath );
-						$mimetype = explode( ";", $mimetype );
-						$mimetype = reset( $mimetype );
-						finfo_close( $finfo );
-					}
-				}
-				else
-				{
-					$finfo = finfo_open( FILEINFO_MIME_TYPE );
-					if( $finfo )
-					{
-						$mimetype = finfo_file( $finfo, $filepath );
-						finfo_close( $finfo );
-					}
+					$mimetype = finfo_file( $finfo, $filepath );
+					finfo_close( $finfo );
 				}
 			}
 			
@@ -1838,18 +1810,10 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 		}
 		
 		/**
-		 * PHP version specific wrapper for json_encode function
+		 * Wrapper for json_encode function
 		 */
 		public static function json_encode( $value )
 		{
-			if( version_compare( phpversion(), "5.4" ) < 0 )
-				return preg_replace(
-						"/\\\\u([a-f0-9]{4})/" .
-						"e", // don't warn me about this, I know!
-						"iconv('UCS-4LE','UTF-8',pack('V', hexdec('U$1')))",
-						json_encode( $value )
-					);
-			
 			return json_encode( $value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 		}
 		
@@ -2504,7 +2468,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 			return self::render_notice( $notice_id, 'error', $attributes );
 		}
 		
-		/*
+		/**
 		 * Helper for replace_tags function
 		 */
 		private static function add_curly_braces($str)
@@ -2529,6 +2493,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 		 */
 		public static function render_file( $template_filepath, $attributes = array() )
 		{
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- $template_filepath is a local filesystem path and can't be used with wp_remote_get()
 			return self::replace_tags( file_get_contents( $template_filepath ) , $attributes );
 		}
 		
@@ -2635,10 +2600,12 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 		 */
 		public static function base64url_encode( $data )
 		{
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions -- only used to encode field names to avoid DB/JSON encoding issues
 			return rtrim( strtr( base64_encode( $data ), '+/', '._' ), '=' );
 		}
 		public static function base64url_decode( $data )
 		{
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions -- only used to decode field names to avoid DB/JSON encoding issues
 			return base64_decode( str_pad( strtr( $data, '._', '+/' ), strlen( $data ) % 4, '=', STR_PAD_RIGHT ) );
 		}
 		public static function wpcf7_field_name_encode( $attachment_id, $pdf_field_name )
@@ -2674,8 +2641,8 @@ if( ! class_exists( 'WPCF7_Pdf_Forms' ) )
 			foreach( explode( ';', $matches[2] ) as $ext )
 				if( $ext == "base64" )
 				{
-					$base64 = true; 
-					if( ! ( $data = base64_decode( $data, $strict=true ) ) )
+					$base64 = true;
+					if( ! ( $data = base64_decode( $data, $strict=true ) ) ) // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions -- only used to decode data URI that has base64-encoded content
 						return false;
 				}
 			

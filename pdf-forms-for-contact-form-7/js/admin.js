@@ -4,6 +4,13 @@ jQuery(document).ready(function($) {
 	if(!wpcf7_form)
 		return;
 	
+	// select2 is a hard dependency for this admin UI, bail early if it's unavailable
+	if(!jQuery.fn.select2 || !jQuery.fn.select2.amd)
+	{
+		console.error('select2 failed to enqueue correctly, preventing PDF Forms Filler admin UI initialization');
+		return;
+	}
+	
 	var pluginData = {
 		attachments: [],
 		mappings: [],
@@ -754,6 +761,31 @@ jQuery(document).ready(function($) {
 		}
 	);
 	
+	// localize select2's built-in messages for the current locale
+	// select2 resolves "select2/i18n/{locale}" from the <html lang> attribute
+	var locale = document.documentElement.lang;
+	var s2l10n = wpcf7_pdf_forms.select2;
+	// english is bundled with select2, so there is nothing to register
+	if(locale && s2l10n && locale.indexOf('en') !== 0)
+	{
+		var plural = function(count, single, many) {
+			return (count === 1 ? single : many).replace('{count}', count);
+		};
+
+		jQuery.fn.select2.amd.define('select2/i18n/' + locale, [], function() {
+			return {
+				errorLoading: function() { return s2l10n.__Error_Loading; },
+				inputTooLong: function(args) { return plural(args.input.length - args.maximum, s2l10n.__Input_Too_Long_Singular, s2l10n.__Input_Too_Long_Plural); },
+				inputTooShort: function(args) { return plural(args.minimum - args.input.length, s2l10n.__Input_Too_Short_Singular, s2l10n.__Input_Too_Short_Plural); },
+				loadingMore: function() { return s2l10n.__Loading_More; },
+				maximumSelected: function(args) { return plural(args.maximum, s2l10n.__Maximum_Selected_Singular, s2l10n.__Maximum_Selected_Plural); },
+				noResults: function() { return s2l10n.__No_Results; },
+				searching: function() { return s2l10n.__Searching; },
+				removeAllItems: function() { return s2l10n.__Remove_All_Items; }
+			};
+		});
+	}
+	
 	jQuery.fn.resetSelect2Field = function(id) {
 		
 		if(typeof id == 'undefined')
@@ -1225,8 +1257,9 @@ jQuery(document).ready(function($) {
 		{
 			var template = jQuery('.wpcf7-pdf-forms-admin .pdf-mapping-row-mailtag-template');
 			var tag = template.clone().removeClass('pdf-mapping-row-mailtag-template').addClass('pdf-mapping-row');
-			
-			tag.find('textarea.mail-tags').val(data.mail_tags).data('mapping_id', data.mapping_id);
+			tag.find('textarea.mail-tags')
+				.val(data.mail_tags)
+				.data('mapping_id', data.mapping_id);
 			tag.find('.pdf-field-name').text(pdf_field_caption);
 			
 			var virtual = false;
@@ -1447,8 +1480,9 @@ jQuery(document).ready(function($) {
 		{
 			var template = jQuery('.wpcf7-pdf-forms-settings-panel .image-embeds-row-mailtag-template');
 			var tag = template.clone().removeClass('image-embeds-row-mailtag-template').addClass('image-embeds-row');
-			tag.find('textarea.mail-tags').text(data.mail_tags);
-			tag.find('textarea.mail-tags').data('embed_id', data.embed.id);
+			tag.find('textarea.mail-tags')
+				.val(data.mail_tags)
+				.data('embed_id', data.embed.id);
 		}
 		else
 		{
@@ -1457,6 +1491,18 @@ jQuery(document).ready(function($) {
 			tag.find('.convert-to-mailtags-button').data('embed_id', data.embed.id);
 			tag.find('span.cf7-field-name').text(data.cf7_field_data.text);
 		}
+		
+		// set unique ids for coordinate inputs and their labels
+		tag.find('.page-coordinates label[for="embed-left"]').attr('for', 'embed-left-'+data.embed.id);
+		tag.find('.page-coordinates input[name="left"]').attr('id', 'embed-left-'+data.embed.id);
+		tag.find('.page-coordinates label[for="embed-top"]').attr('for', 'embed-top-'+data.embed.id);
+		tag.find('.page-coordinates input[name="top"]').attr('id', 'embed-top-'+data.embed.id);
+		tag.find('.page-coordinates label[for="embed-width"]').attr('for', 'embed-width-'+data.embed.id);
+		tag.find('.page-coordinates input[name="width"]').attr('id', 'embed-width-'+data.embed.id);
+		tag.find('.page-coordinates label[for="embed-height"]').attr('for', 'embed-height-'+data.embed.id);
+		tag.find('.page-coordinates input[name="height"]').attr('id', 'embed-height-'+data.embed.id);
+		
+		tag.attr('data-embed_id', data.embed.id);
 		
 		var delete_button = tag.find('.delete-cf7-field-embed-button');
 		delete_button.data('embed_id', data.embed.id);
@@ -1524,6 +1570,20 @@ jQuery(document).ready(function($) {
 		if(!pageData || !pageData.width || !pageData.height)
 			return;
 		
+		// set the container and image dimensions
+		var width = 500;
+		var height = Math.round((pageData.height / pageData.width) * width);
+		var widthCss = width + 'px';
+		var heightCss = height + 'px';
+		
+		var container = tag.find('.jcrop-container');
+		var image = tag.find('.jcrop-page');
+		
+		container.css('width', widthCss);
+		container.css('height', heightCss);
+		image.attr('width', width).css('width', widthCss);
+		image.attr('height', height).css('height', heightCss);
+		
 		jQuery.ajax({
 			url: ajaxurl,
 			type: 'POST',
@@ -1543,22 +1603,6 @@ jQuery(document).ready(function($) {
 				
 				if(data.hasOwnProperty('snapshot'))
 				{
-					var width = 500;
-					var height = Math.round((pageData.height / pageData.width) * width);
-					
-					var container = tag.find('.jcrop-container');
-					var image = tag.find('.jcrop-page');
-					
-					var widthStr = width.toString();
-					var heightStr = height.toString();
-					var widthCss = widthStr + 'px';
-					var heightCss = heightStr + 'px';
-					
-					jQuery(image).attr('width', widthStr).css('width', widthCss);
-					jQuery(image).attr('height', heightStr).css('height', heightCss);
-					jQuery(container).css('width', widthCss);
-					jQuery(container).css('height', heightCss);
-					
 					var xPixelsPerPoint = width / pageData.width;
 					var yPixelsPerPoint = height / pageData.height;
 					
