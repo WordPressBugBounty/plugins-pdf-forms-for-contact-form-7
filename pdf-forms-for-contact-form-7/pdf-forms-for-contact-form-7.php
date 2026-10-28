@@ -3,9 +3,9 @@
  * Plugin Name: PDF Forms Filler for CF7
  * Plugin URI: https://pdfformsfiller.org/
  * Description: Build Contact Form 7 forms from PDF forms. Get PDFs auto-filled and attached to email messages and/or website responses on form submission.
- * Version: 2.2.7
+ * Version: 2.2.8
  * Requires at least: 4.8
- * Requires PHP: 5.6
+ * Requires PHP: 7.0
  * Requires Plugins: contact-form-7
  * Author: Maximum.Software
  * Author URI: https://maximum.software/
@@ -21,7 +21,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms', false ) )
 {
 	class WPCF7_Pdf_Forms
 	{
-		const VERSION = '2.2.7';
+		const VERSION = '2.2.8';
 		const MIN_WPCF7_VERSION = '5.0';
 		const MAX_WPCF7_VERSION = '6.2.99';
 		private static $BLACKLISTED_WPCF7_VERSIONS = array();
@@ -254,7 +254,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms', false ) )
 		private function run_data_migration( $script )
 		{
 			try { include( $script ); }
-			catch( Exception $e ) { }
+			catch( Throwable $e ) { self::log_error( $e ); }
 		}
 		
 		/**
@@ -1049,8 +1049,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms', false ) )
 					if( method_exists( $parser, 'getParsedMail' ) )
 						$content = $parser->getParsedMail();
 				}
-				catch(Exception $e) { } // ignore
-				catch(Throwable $e) { } // ignore
+				catch(Throwable $e) { self::log_error( $e ); } // ignore
 			}
 			
 			return $content;
@@ -1264,7 +1263,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms', false ) )
 							else
 								$data[$field] = self::wpcf7_mail_replace_tags( "[".$name."]" );
 						}
-						catch(Exception $e) { }
+						catch(Throwable $e) { self::log_error( $e ); }
 					}
 					
 					if( count( $value_mappings ) > 0 )
@@ -1436,7 +1435,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms', false ) )
 					{
 						$empty_data = true;
 						foreach( $data as $field => $value )
-							if( !( is_null( $value ) || $value === array() || trim( $value ) === "" ) )
+							if( !( is_null( $value ) || $value === array() || ( ! is_array( $value ) && trim( $value ) === "" ) ) )
 							{
 								$empty_data = false;
 								break;
@@ -1527,7 +1526,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms', false ) )
 						
 						$files[] = array( 'attachment_id' => $attachment_id, 'file' => $destfile, 'filename' => $destfilename . '.pdf', 'options' => $attachment['options'] );
 					}
-					catch(Exception $e)
+					catch(Throwable $e)
 					{
 						throw new Exception(
 							self::replace_tags(
@@ -1604,7 +1603,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms', false ) )
 					}
 				}
 			}
-			catch( Exception $e )
+			catch( Throwable $e )
 			{
 				$abort = true;
 				$submission->set_response(
@@ -1684,7 +1683,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms', false ) )
 					'info' => $info,
 				) );
 			}
-			catch( Exception $e )
+			catch( Throwable $e )
 			{
 				return wp_send_json( array(
 					'success'  => false,
@@ -1742,7 +1741,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms', false ) )
 					$md5sum = @md5_file( $temp_filepath );
 					@unlink( $temp_filepath );
 				}
-				catch(Exception $e)
+				catch(Throwable $e)
 				{
 					@unlink( $temp_filepath );
 					throw $e;
@@ -1815,6 +1814,24 @@ if( ! class_exists( 'WPCF7_Pdf_Forms', false ) )
 		public static function json_encode( $value )
 		{
 			return json_encode( $value, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+		}
+
+		/**
+		 * Logs a throwable to the debug log when WP_DEBUG is enabled
+		 */
+		public static function log_error( $e )
+		{
+			if( defined( 'WP_DEBUG' ) && WP_DEBUG )
+				error_log( // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- error_log() is the WordPress convention for writing to the debug log
+					self::replace_tags(
+						'PDF Forms Filler for CF7: {error-message} at {error-file}:{error-line}',
+						array(
+							'error-message' => $e->getMessage(),
+							'error-file'    => wp_basename( $e->getFile() ),
+							'error-line'    => $e->getLine(),
+						)
+					)
+				);
 		}
 		
 		/**
@@ -2046,7 +2063,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms', false ) )
 					'tags' => $tags,
 				) );
 			}
-			catch( Exception $e )
+			catch( Throwable $e )
 			{
 				return wp_send_json( array(
 					'success'  => false,
@@ -2175,7 +2192,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms', false ) )
 					'embeds' => $embeds,
 				) );
 			}
-			catch( Exception $e )
+			catch( Throwable $e )
 			{
 				return wp_send_json( array(
 					'success'  => false,
@@ -2280,7 +2297,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms', false ) )
 					'fields' => $fields,
 				) );
 			}
-			catch( Exception $e )
+			catch( Throwable $e )
 			{
 				return wp_send_json( array(
 					'success'  => false,
@@ -2371,7 +2388,7 @@ if( ! class_exists( 'WPCF7_Pdf_Forms', false ) )
 					'snapshot' => reset( $snapshot ),
 				) );
 			}
-			catch( Exception $e )
+			catch( Throwable $e )
 			{
 				return wp_send_json( array(
 					'success' => false,
@@ -2740,11 +2757,14 @@ if( ! class_exists( 'WPCF7_Pdf_Forms', false ) )
 		 */
 		public function handle_hidden_iframe_download()
 		{
-			if( isset( $_GET['wpcf7-pdf-forms-download'] ) )
+			if( isset( $_GET['wpcf7-pdf-forms-download'] ) && isset( $_GET['hash'] ) )
 			{
 				$downloads = $this->get_downloads();
 				$filepath = $_GET['wpcf7-pdf-forms-download'];
 				$hash = $_GET['hash'];
+				
+				if( ! is_string( $filepath ) || ! is_string( $hash ) )
+					return;
 				
 				// invasive pat down
 				$path_parts = explode( '/', $filepath );
